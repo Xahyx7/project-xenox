@@ -13,8 +13,8 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #1c1c1e;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            background: #000;
             color: white;
             overflow: hidden;
             height: 100vh;
@@ -26,32 +26,73 @@
             display: flex;
             height: 100vh;
             width: 100vw;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Sidebar */
         .sidebar {
             width: 320px;
-            background: #2c2c2e;
+            background: linear-gradient(145deg, #1c1c1e 0%, #2c2c2e 100%);
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #444;
+            border-right: 1px solid rgba(84, 84, 88, 0.6);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(0);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+            position: relative;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-320px);
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            right: -44px;
+            top: 20px;
+            width: 44px;
+            height: 44px;
+            background: rgba(28, 28, 30, 0.8);
+            border: 1px solid rgba(84, 84, 88, 0.6);
+            border-radius: 0 12px 12px 0;
+            color: #007AFF;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+            z-index: 101;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(0, 122, 255, 0.1);
+            border-color: rgba(0, 122, 255, 0.3);
         }
 
         .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid #444;
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(84, 84, 88, 0.3);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .sidebar-title {
             font-size: 28px;
-            font-weight: bold;
+            font-weight: 700;
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .add-btn {
-            background: #007AFF;
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
             color: white;
             border: none;
             width: 36px;
@@ -62,24 +103,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
         }
 
         .add-btn:hover {
-            background: #0056b3;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+        }
+
+        .add-btn:active {
+            transform: scale(0.95);
         }
 
         .subjects-section {
             padding: 20px;
-            border-bottom: 1px solid #444;
+            border-bottom: 1px solid rgba(84, 84, 88, 0.3);
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            color: #ffffff;
+            opacity: 0.8;
         }
 
         .subject-item {
@@ -87,25 +137,37 @@
             margin: 4px 0;
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid transparent;
         }
 
         .subject-item:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
         }
 
         .subject-item.active {
-            background: #007AFF;
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.2), rgba(90, 200, 250, 0.1));
+            border-color: rgba(0, 122, 255, 0.3);
+            color: #5AC8FA;
         }
 
         .notes-count {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
             border-radius: 12px;
             font-size: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .subject-item.active .notes-count {
+            background: rgba(0, 122, 255, 0.3);
+            color: white;
         }
 
         .notes-list {
@@ -114,40 +176,61 @@
             padding: 20px;
         }
 
+        .notes-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .notes-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .notes-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
         .note-item {
             padding: 16px;
             margin: 8px 0;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-left: 4px solid transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .note-item:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .note-item.active {
-            background: rgba(0,122,255,0.2);
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.15), rgba(90, 200, 250, 0.05));
             border-left-color: #007AFF;
+            border-color: rgba(0, 122, 255, 0.3);
         }
 
         .note-title {
             font-weight: 600;
             margin-bottom: 8px;
             font-size: 16px;
+            color: #ffffff;
         }
 
         .note-preview {
             font-size: 14px;
-            color: #888;
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 8px;
+            line-height: 1.4;
         }
 
         .note-date {
             font-size: 12px;
-            color: #666;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
         }
 
         /* Main Editor Area */
@@ -155,108 +238,153 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: white;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
             position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed + .editor-area {
+            margin-left: -320px;
         }
 
         .editor-toolbar {
-            background: #f8f8f8;
-            border-bottom: 1px solid #ddd;
-            padding: 12px 20px;
+            background: rgba(248, 249, 250, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 16px 20px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             flex-wrap: wrap;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
+        .back-btn, .sidebar-btn {
+            background: rgba(0, 122, 255, 0.1);
+            border: 1px solid rgba(0, 122, 255, 0.2);
             color: #007AFF;
-            padding: 8px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .back-btn:hover {
-            background: rgba(0,122,255,0.1);
+        .back-btn:hover, .sidebar-btn:hover {
+            background: rgba(0, 122, 255, 0.15);
+            border-color: rgba(0, 122, 255, 0.3);
+            transform: scale(1.05);
         }
 
         .title-input {
             flex: 1;
             border: none;
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
             background: transparent;
             outline: none;
-            color: #333;
-            padding: 8px 0;
+            color: #1d1d1f;
+            padding: 12px 0;
+            font-family: inherit;
         }
 
         .title-input::placeholder {
-            color: #999;
+            color: rgba(29, 29, 47, 0.5);
         }
 
         .tool-group {
             display: flex;
             gap: 8px;
             align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .tool-btn {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            padding: 10px 14px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s;
-            min-width: 40px;
-            height: 40px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #1d1d1f;
         }
 
         .tool-btn:hover {
-            background: #f0f0f0;
+            background: rgba(0, 0, 0, 0.05);
         }
 
         .tool-btn.active {
-            background: #007AFF;
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
             color: white;
-            border-color: #007AFF;
+            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
         }
 
         .color-picker {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
 
         .color-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 16px;
-            border: 2px solid #ddd;
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.8);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 1);
         }
 
         .color-btn.active {
             border-color: #007AFF;
-            transform: scale(1.1);
+            transform: scale(1.15);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
         }
 
         .size-slider {
-            width: 100px;
+            width: 120px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .size-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
         }
 
         .size-display {
-            font-size: 12px;
+            font-size: 13px;
             color: #666;
-            min-width: 35px;
+            min-width: 40px;
+            font-weight: 600;
         }
 
         /* Canvas Container */
@@ -264,7 +392,7 @@
             flex: 1;
             position: relative;
             overflow: hidden;
-            background: white;
+            background: #ffffff;
         }
 
         .drawing-canvas {
@@ -274,7 +402,7 @@
             width: 100%;
             height: 100%;
             cursor: crosshair;
-            background: white;
+            background: #ffffff;
             touch-action: none;
         }
 
@@ -287,16 +415,16 @@
             border: none;
             outline: none;
             padding: 40px;
-            font-size: 16px;
+            font-size: 18px;
             line-height: 1.6;
-            color: #333;
+            color: #1d1d1f;
             background: transparent;
             resize: none;
             font-family: inherit;
         }
 
         .text-editor::placeholder {
-            color: #999;
+            color: rgba(29, 29, 47, 0.4);
         }
 
         /* Empty State */
@@ -306,14 +434,26 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: #666;
-            background: white;
+            color: rgba(29, 29, 47, 0.6);
+            background: #ffffff;
         }
 
         .empty-icon {
             font-size: 64px;
             margin-bottom: 20px;
-            opacity: 0.5;
+            opacity: 0.4;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: rgba(29, 29, 47, 0.6);
         }
 
         /* Modal */
@@ -324,10 +464,11 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.6);
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(20px);
         }
 
         .modal.show {
@@ -335,33 +476,38 @@
         }
 
         .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 30px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 20px;
+            padding: 32px;
             width: 90%;
-            max-width: 400px;
-            color: #333;
+            max-width: 420px;
+            color: #1d1d1f;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #333;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #1d1d1f;
         }
 
         .modal-input {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #ddd;
+            padding: 16px 20px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             font-size: 16px;
             outline: none;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            font-family: inherit;
+            transition: all 0.3s ease;
         }
 
         .modal-input:focus {
             border-color: #007AFF;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
         }
 
         .modal-actions {
@@ -371,27 +517,35 @@
         }
 
         .modal-btn {
-            padding: 12px 24px;
+            padding: 14px 28px;
             border: none;
             border-radius: 12px;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            font-family: inherit;
         }
 
         .modal-btn.primary {
-            background: #007AFF;
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
             color: white;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+        }
+
+        .modal-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
         }
 
         .modal-btn.secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: rgba(0, 0, 0, 0.05);
+            color: #1d1d1f;
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .modal-btn:hover {
-            opacity: 0.8;
+        .modal-btn.secondary:hover {
+            background: rgba(0, 0, 0, 0.1);
         }
 
         /* Mobile Responsive */
@@ -399,38 +553,65 @@
             .sidebar {
                 width: 100%;
                 max-width: 350px;
+                position: absolute;
+                z-index: 200;
             }
             
-            .notes-app {
-                flex-direction: column;
+            .sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar-toggle {
+                right: -50px;
+                border-radius: 0 16px 16px 0;
             }
             
             .editor-toolbar {
                 flex-wrap: wrap;
-                gap: 8px;
+                gap: 12px;
+                padding: 12px 16px;
             }
             
             .tool-group {
                 flex-wrap: wrap;
             }
+
+            .title-input {
+                font-size: 20px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .note-item, .subject-item {
+            animation: fadeIn 0.3s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="notes-app">
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
+            <!-- Sidebar Toggle -->
+            <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+                <span id="toggleIcon">‹</span>
+            </button>
+
             <!-- Header -->
             <div class="sidebar-header">
                 <div class="sidebar-title">Notes</div>
-                <button class="add-btn" onclick="createNewNote()">+</button>
+                <button class="add-btn" onclick="createNewNote()" title="New Note">+</button>
             </div>
 
             <!-- Subjects -->
             <div class="subjects-section">
                 <div class="section-title">
                     Subjects
-                    <button class="add-btn" onclick="showAddSubjectModal()" style="width: 28px; height: 28px; font-size: 16px;">+</button>
+                    <button class="add-btn" onclick="showAddSubjectModal()" title="Add Subject" style="width: 28px; height: 28px; font-size: 16px;">+</button>
                 </div>
                 <div id="subjectsList">
                     <!-- Subjects loaded by JS -->
@@ -447,37 +628,38 @@
         <div class="editor-area" id="editorArea">
             <!-- Toolbar -->
             <div class="editor-toolbar">
-                <button class="back-btn" onclick="goHome()">←</button>
-                <input type="text" class="title-input" id="titleInput" placeholder="Note Title">
+                <button class="back-btn" onclick="goHome()" title="Back to Home">←</button>
+                <button class="sidebar-btn" onclick="toggleSidebar()" title="Toggle Sidebar" style="display: none;" id="mobileSidebarBtn">☰</button>
+                <input type="text" class="title-input" id="titleInput" placeholder="Untitled Note">
                 
                 <div class="tool-group">
-                    <button class="tool-btn" id="textModeBtn" onclick="setMode('text')">Text</button>
-                    <button class="tool-btn active" id="drawModeBtn" onclick="setMode('draw')">Draw</button>
+                    <button class="tool-btn" id="textModeBtn" onclick="setMode('text')" title="Text Mode">Text</button>
+                    <button class="tool-btn active" id="drawModeBtn" onclick="setMode('draw')" title="Draw Mode">Draw</button>
                 </div>
 
                 <div class="tool-group" id="drawingTools">
-                    <button class="tool-btn active" onclick="setTool('pen')" data-tool="pen">Pen</button>
-                    <button class="tool-btn" onclick="setTool('highlighter')" data-tool="highlighter">Highlighter</button>
-                    <button class="tool-btn" onclick="setTool('eraser')" data-tool="eraser">Eraser</button>
+                    <button class="tool-btn active" onclick="setTool('pen')" data-tool="pen" title="Pen">✏️</button>
+                    <button class="tool-btn" onclick="setTool('highlighter')" data-tool="highlighter" title="Highlighter">🖍️</button>
+                    <button class="tool-btn" onclick="setTool('eraser')" data-tool="eraser" title="Eraser">🧹</button>
                 </div>
 
                 <div class="color-picker" id="colorPicker">
-                    <div class="color-btn active" style="background: #000" onclick="setColor('#000')" data-color="#000"></div>
-                    <div class="color-btn" style="background: #007AFF" onclick="setColor('#007AFF')" data-color="#007AFF"></div>
-                    <div class="color-btn" style="background: #FF3B30" onclick="setColor('#FF3B30')" data-color="#FF3B30"></div>
-                    <div class="color-btn" style="background: #34C759" onclick="setColor('#34C759')" data-color="#34C759"></div>
-                    <div class="color-btn" style="background: #FF9500" onclick="setColor('#FF9500')" data-color="#FF9500"></div>
-                    <div class="color-btn" style="background: #AF52DE" onclick="setColor('#AF52DE')" data-color="#AF52DE"></div>
+                    <div class="color-btn active" style="background: #000" onclick="setColor('#000')" data-color="#000" title="Black"></div>
+                    <div class="color-btn" style="background: #007AFF" onclick="setColor('#007AFF')" data-color="#007AFF" title="Blue"></div>
+                    <div class="color-btn" style="background: #FF3B30" onclick="setColor('#FF3B30')" data-color="#FF3B30" title="Red"></div>
+                    <div class="color-btn" style="background: #34C759" onclick="setColor('#34C759')" data-color="#34C759" title="Green"></div>
+                    <div class="color-btn" style="background: #FF9500" onclick="setColor('#FF9500')" data-color="#FF9500" title="Orange"></div>
+                    <div class="color-btn" style="background: #AF52DE" onclick="setColor('#AF52DE')" data-color="#AF52DE" title="Purple"></div>
                 </div>
 
                 <div class="tool-group">
-                    <input type="range" class="size-slider" id="sizeSlider" min="1" max="20" value="3" onchange="setBrushSize(this.value)">
+                    <input type="range" class="size-slider" id="sizeSlider" min="1" max="20" value="3" onchange="setBrushSize(this.value)" title="Brush Size">
                     <span class="size-display" id="sizeDisplay">3px</span>
                 </div>
 
                 <div class="tool-group">
-                    <button class="tool-btn" onclick="undoAction()">↶</button>
-                    <button class="tool-btn" onclick="clearCanvas()">Clear</button>
+                    <button class="tool-btn" onclick="undoAction()" title="Undo">↶</button>
+                    <button class="tool-btn" onclick="clearCanvas()" title="Clear Canvas">🗑️</button>
                 </div>
             </div>
 
@@ -491,7 +673,7 @@
             <div class="empty-state" id="emptyState">
                 <div class="empty-icon">📝</div>
                 <h3>Select a note to start editing</h3>
-                <p>Choose a note from the list or create a new one</p>
+                <p>Choose a note from the sidebar or create a new one</p>
             </div>
         </div>
     </div>
@@ -503,13 +685,13 @@
             <input type="text" class="modal-input" id="subjectInput" placeholder="Enter subject name">
             <div class="modal-actions">
                 <button class="modal-btn secondary" onclick="hideModal()">Cancel</button>
-                <button class="modal-btn primary" onclick="addSubject()">Add</button>
+                <button class="modal-btn primary" onclick="addSubject()">Add Subject</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Notes App - Complete iPad-like Experience
+        // Notes App - Complete iPad-like Experience with Collapsible Sidebar
         class NotesApp {
             constructor() {
                 this.subjects = [];
@@ -524,6 +706,7 @@
                 this.ctx = null;
                 this.isDrawing = false;
                 this.undoStack = [];
+                this.sidebarCollapsed = false;
                 this.init();
             }
 
@@ -532,7 +715,24 @@
                 this.setupCanvas();
                 this.setupEventListeners();
                 this.render();
+                this.checkMobile();
                 console.log('✅ Notes App Ready');
+            }
+
+            checkMobile() {
+                const isMobile = window.innerWidth <= 768;
+                const mobileSidebarBtn = document.getElementById('mobileSidebarBtn');
+                
+                if (isMobile) {
+                    mobileSidebarBtn.style.display = 'flex';
+                    this.sidebarCollapsed = true;
+                    this.updateSidebarState();
+                }
+                
+                window.addEventListener('resize', () => {
+                    const isMobileNow = window.innerWidth <= 768;
+                    mobileSidebarBtn.style.display = isMobileNow ? 'flex' : 'none';
+                });
             }
 
             loadData() {
@@ -542,8 +742,8 @@
                 if (this.notes.length === 0) {
                     this.notes.push({
                         id: Date.now(),
-                        title: 'Welcome Note',
-                        content: 'Welcome to your smart notebook! Start writing or drawing.',
+                        title: 'Welcome to Smart Notes',
+                        content: 'This is your professional note-taking app. Start writing or drawing!',
                         subject: 'Math',
                         created: new Date().toISOString(),
                         updated: new Date().toISOString(),
@@ -666,6 +866,29 @@
                 
                 titleInput.addEventListener('input', () => this.saveCurrentNote());
                 textEditor.addEventListener('input', () => this.saveCurrentNote());
+            }
+
+            toggleSidebar() {
+                this.sidebarCollapsed = !this.sidebarCollapsed;
+                this.updateSidebarState();
+            }
+
+            updateSidebarState() {
+                const sidebar = document.getElementById('sidebar');
+                const toggleIcon = document.getElementById('toggleIcon');
+                
+                if (this.sidebarCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    toggleIcon.textContent = '›';
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    toggleIcon.textContent = '‹';
+                }
+                
+                // Trigger canvas resize after sidebar animation
+                setTimeout(() => {
+                    this.resizeCanvas();
+                }, 400);
             }
 
             render() {
@@ -868,6 +1091,10 @@
             window.location.href = '../index.html';
         }
 
+        function toggleSidebar() {
+            app.toggleSidebar();
+        }
+
         function createNewNote() {
             app.createNewNote();
         }
@@ -923,7 +1150,7 @@
         // Initialize app
         document.addEventListener('DOMContentLoaded', () => {
             app = new NotesApp();
-            console.log('🚀 Notes App Started');
+            console.log('🚀 Professional Notes App Started');
         });
 
         // Modal handling
