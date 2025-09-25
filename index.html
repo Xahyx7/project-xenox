@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Book Tablet</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/home.css">
+    <meta name="theme-color" content="#1B1B1D">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+</head>
+<body>
+    <div class="tablet-container">
+        <div class="wallpaper-bg"></div>
+        
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <span id="current-time"></span>
+            </div>
+            <div class="status-right">
+                <span class="battery">100%</span>
+                <span class="wifi">📶</span>
+            </div>
+        </div>
+
+        <!-- App Grid -->
+        <div class="app-grid">
+            <div class="app-icon" onclick="openApp('notes')">
+                <div class="app-icon-image">
+                    <img src="assets/images/notes.jpg" alt="Notes" loading="lazy">
+                </div>
+                <span class="app-label">Notes</span>
+            </div>
+
+            <div class="app-icon" onclick="openApp('bookmart')">
+                <div class="app-icon-image">
+                    <img src="assets/images/bookmart.jpg" alt="Book Mart" loading="lazy">
+                </div>
+                <span class="app-label">Book Mart</span>
+            </div>
+
+            <div class="app-icon" onclick="openApp('ai')">
+                <div class="app-icon-image">
+                    <img src="assets/images/ai.jpg" alt="AI Assistant" loading="lazy">
+                </div>
+                <span class="app-label">AI Assistant</span>
+            </div>
+        </div>
+
+        <!-- Dock -->
+        <div class="dock">
+            <div class="dock-indicator"></div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>
