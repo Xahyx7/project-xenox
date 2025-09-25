@@ -4,197 +4,494 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes - Smart Book</title>
-    <link rel="stylesheet" href="../css/common.css">
-    <link rel="stylesheet" href="../css/notes.css">
-    <meta name="theme-color" content="#1B1B1D">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #1c1c1e;
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+        }
+
+        .notes-app {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: #2c2c2e;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #444;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            background: #007AFF;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-btn:hover {
+            background: #0056b3;
+        }
+
+        .subjects-section {
+            padding: 20px;
+            border-bottom: 1px solid #444;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subject-item {
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subject-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .subject-item.active {
+            background: #007AFF;
+        }
+
+        .notes-count {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .notes-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .note-item {
+            padding: 16px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .note-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .note-item.active {
+            background: rgba(0,122,255,0.2);
+            border-left-color: #007AFF;
+        }
+
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .note-preview {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .note-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Main Editor Area */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+        }
+
+        .editor-toolbar {
+            background: #f8f8f8;
+            border-bottom: 1px solid #ddd;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #007AFF;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(0,122,255,0.1);
+        }
+
+        .title-input {
+            flex: 1;
+            border: none;
+            font-size: 20px;
+            font-weight: 600;
+            background: transparent;
+            outline: none;
+            color: #333;
+            padding: 8px 0;
+        }
+
+        .title-input::placeholder {
+            color: #999;
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .tool-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .tool-btn.active {
+            background: #007AFF;
+            color: white;
+            border-color: #007AFF;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 6px;
+        }
+
+        .color-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-btn.active {
+            border-color: #007AFF;
+            transform: scale(1.1);
+        }
+
+        .size-slider {
+            width: 100px;
+        }
+
+        .size-display {
+            font-size: 12px;
+            color: #666;
+            min-width: 35px;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: white;
+        }
+
+        .drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            background: white;
+            touch-action: none;
+        }
+
+        .text-editor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            padding: 40px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            background: transparent;
+            resize: none;
+            font-family: inherit;
+        }
+
+        .text-editor::placeholder {
+            color: #999;
+        }
+
+        /* Empty State */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            background: white;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            color: #333;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 20px;
+        }
+
+        .modal-input:focus {
+            border-color: #007AFF;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.primary {
+            background: #007AFF;
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .notes-app {
+                flex-direction: column;
+            }
+            
+            .editor-toolbar {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .tool-group {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="notes-container">
-        <!-- Header -->
-        <header class="notes-header">
-            <button class="btn-icon back-btn" onclick="goHome()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-            </button>
-            <h1 class="app-title">Notes</h1>
-            <div class="header-actions">
-                <button class="btn-icon search-btn" onclick="toggleSearch()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="m21 21-4.35-4.35"/>
-                    </svg>
-                </button>
-                <button class="btn-icon menu-btn" onclick="toggleMenu()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="1"/>
-                        <circle cx="19" cy="12" r="1"/>
-                        <circle cx="5" cy="12" r="1"/>
-                    </svg>
-                </button>
+    <div class="notes-app">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Header -->
+            <div class="sidebar-header">
+                <div class="sidebar-title">Notes</div>
+                <button class="add-btn" onclick="createNewNote()">+</button>
             </div>
-        </header>
 
-        <div class="main-content">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    <h2>Subjects</h2>
-                    <button class="btn-icon add-subject-btn" onclick="showAddSubjectModal()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                    </button>
+            <!-- Subjects -->
+            <div class="subjects-section">
+                <div class="section-title">
+                    Subjects
+                    <button class="add-btn" onclick="showAddSubjectModal()" style="width: 28px; height: 28px; font-size: 16px;">+</button>
                 </div>
-
-                <div class="subjects-list" id="subjectsList">
+                <div id="subjectsList">
                     <!-- Subjects loaded by JS -->
                 </div>
-            </aside>
+            </div>
 
             <!-- Notes List -->
             <div class="notes-list" id="notesList">
-                <div class="notes-list-header">
-                    <h3 id="currentSubject">All Notes</h3>
-                    <button class="btn-primary new-note-btn" onclick="createNewNote()">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        New Note
-                    </button>
+                <!-- Notes loaded by JS -->
+            </div>
+        </div>
+
+        <!-- Editor Area -->
+        <div class="editor-area" id="editorArea">
+            <!-- Toolbar -->
+            <div class="editor-toolbar">
+                <button class="back-btn" onclick="goHome()">←</button>
+                <input type="text" class="title-input" id="titleInput" placeholder="Note Title">
+                
+                <div class="tool-group">
+                    <button class="tool-btn" id="textModeBtn" onclick="setMode('text')">Text</button>
+                    <button class="tool-btn active" id="drawModeBtn" onclick="setMode('draw')">Draw</button>
                 </div>
 
-                <div class="notes-grid" id="notesGrid">
-                    <!-- Notes loaded by JS -->
+                <div class="tool-group" id="drawingTools">
+                    <button class="tool-btn active" onclick="setTool('pen')" data-tool="pen">Pen</button>
+                    <button class="tool-btn" onclick="setTool('highlighter')" data-tool="highlighter">Highlighter</button>
+                    <button class="tool-btn" onclick="setTool('eraser')" data-tool="eraser">Eraser</button>
                 </div>
 
-                <div class="empty-state" id="emptyState">
-                    <div class="empty-icon">📝</div>
-                    <h3>No notes yet</h3>
-                    <p>Create your first note to get started</p>
-                    <button class="btn-primary" onclick="createNewNote()">Create Note</button>
+                <div class="color-picker" id="colorPicker">
+                    <div class="color-btn active" style="background: #000" onclick="setColor('#000')" data-color="#000"></div>
+                    <div class="color-btn" style="background: #007AFF" onclick="setColor('#007AFF')" data-color="#007AFF"></div>
+                    <div class="color-btn" style="background: #FF3B30" onclick="setColor('#FF3B30')" data-color="#FF3B30"></div>
+                    <div class="color-btn" style="background: #34C759" onclick="setColor('#34C759')" data-color="#34C759"></div>
+                    <div class="color-btn" style="background: #FF9500" onclick="setColor('#FF9500')" data-color="#FF9500"></div>
+                    <div class="color-btn" style="background: #AF52DE" onclick="setColor('#AF52DE')" data-color="#AF52DE"></div>
+                </div>
+
+                <div class="tool-group">
+                    <input type="range" class="size-slider" id="sizeSlider" min="1" max="20" value="3" onchange="setBrushSize(this.value)">
+                    <span class="size-display" id="sizeDisplay">3px</span>
+                </div>
+
+                <div class="tool-group">
+                    <button class="tool-btn" onclick="undoAction()">↶</button>
+                    <button class="tool-btn" onclick="clearCanvas()">Clear</button>
                 </div>
             </div>
 
-            <!-- Editor -->
-            <div class="editor-container" id="editorContainer">
-                <!-- Text Editor -->
-                <div class="text-editor" id="textEditor">
-                    <div class="editor-header">
-                        <input type="text" class="note-title" id="noteTitle" placeholder="Title">
-                        <div class="editor-actions">
-                            <button class="btn-icon" onclick="toggleDrawingMode()" id="drawModeBtn">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-                                </svg>
-                            </button>
-                            <button class="btn-icon" onclick="formatText('bold')">
-                                <strong>B</strong>
-                            </button>
-                            <button class="btn-icon" onclick="formatText('italic')">
-                                <em>I</em>
-                            </button>
-                            <button class="btn-icon" onclick="formatText('underline')">
-                                <u>U</u>
-                            </button>
-                        </div>
-                    </div>
+            <!-- Canvas Container -->
+            <div class="canvas-container" id="canvasContainer">
+                <canvas class="drawing-canvas" id="drawingCanvas"></canvas>
+                <textarea class="text-editor" id="textEditor" placeholder="Start writing your notes here..." style="display: none;"></textarea>
+            </div>
 
-                    <div class="formatting-toolbar" id="formattingToolbar">
-                        <div class="toolbar-group">
-                            <button class="format-btn" onclick="formatText('heading1')">H1</button>
-                            <button class="format-btn" onclick="formatText('heading2')">H2</button>
-                            <button class="format-btn" onclick="formatText('heading3')">H3</button>
-                        </div>
-                        <div class="toolbar-group">
-                            <button class="format-btn" onclick="formatText('bulletList')">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="8" y1="6" x2="21" y2="6"/>
-                                    <line x1="8" y1="12" x2="21" y2="12"/>
-                                    <line x1="8" y1="18" x2="21" y2="18"/>
-                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
-                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
-                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
-                                </svg>
-                            </button>
-                            <button class="format-btn" onclick="formatText('numberList')">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="10" y1="6" x2="21" y2="6"/>
-                                    <line x1="10" y1="12" x2="21" y2="12"/>
-                                    <line x1="10" y1="18" x2="21" y2="18"/>
-                                    <circle cx="4" cy="6" r="1"/>
-                                    <circle cx="4" cy="12" r="1"/>
-                                    <circle cx="4" cy="18" r="1"/>
-                                </svg>
-                            </button>
-                            <button class="format-btn" onclick="formatText('checklist')">☐</button>
-                        </div>
-                    </div>
-
-                    <div class="editor-content" contenteditable="true" id="editorContent" placeholder="Start writing..."></div>
-                </div>
-
-                <!-- Drawing Canvas -->
-                <div class="drawing-container" id="drawingContainer">
-                    <div class="drawing-toolbar">
-                        <div class="tool-group">
-                            <button class="tool-btn active" data-tool="pen" onclick="selectTool('pen')">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-                                </svg>
-                            </button>
-                            <button class="tool-btn" data-tool="highlighter" onclick="selectTool('highlighter')">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 11l3 3L22 4"/>
-                                </svg>
-                            </button>
-                            <button class="tool-btn" data-tool="eraser" onclick="selectTool('eraser')">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 20H8l-4-4a1 1 0 010-1.41l4.41-4.41A2 2 0 019.83 9h8.84a2 2 0 011.41.59L22 12l-2 8z"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="color-group" id="colorPalette">
-                            <div class="color-option active" data-color="#000000" style="background: #000000" onclick="selectColor('#000000')"></div>
-                            <div class="color-option" data-color="#007AFF" style="background: #007AFF" onclick="selectColor('#007AFF')"></div>
-                            <div class="color-option" data-color="#34C759" style="background: #34C759" onclick="selectColor('#34C759')"></div>
-                            <div class="color-option" data-color="#FF9500" style="background: #FF9500" onclick="selectColor('#FF9500')"></div>
-                            <div class="color-option" data-color="#FF3B30" style="background: #FF3B30" onclick="selectColor('#FF3B30')"></div>
-                            <div class="color-option" data-color="#AF52DE" style="background: #AF52DE" onclick="selectColor('#AF52DE')"></div>
-                        </div>
-
-                        <div class="size-group">
-                            <input type="range" class="size-slider" id="brushSize" min="1" max="20" value="3" onchange="updateBrushSize(this.value)">
-                            <span class="size-label" id="sizeLabel">3px</span>
-                        </div>
-
-                        <div class="action-group">
-                            <button class="tool-btn" onclick="undoDrawing()">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 7v6h6"/>
-                                    <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/>
-                                </svg>
-                            </button>
-                            <button class="tool-btn" onclick="clearCanvas()">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 6h18"/>
-                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
-                </div>
-
-                <div class="editor-empty" id="editorEmpty">
-                    <div class="empty-icon">📄</div>
-                    <h3>Select a note to start editing</h3>
-                    <p>Choose a note from the list or create a new one</p>
-                </div>
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">📝</div>
+                <h3>Select a note to start editing</h3>
+                <p>Choose a note from the list or create a new one</p>
             </div>
         </div>
     </div>
@@ -202,16 +499,448 @@
     <!-- Add Subject Modal -->
     <div class="modal" id="addSubjectModal">
         <div class="modal-content">
-            <h3>Add Subject</h3>
-            <input type="text" class="form-input" id="subjectNameInput" placeholder="Subject name (e.g. Mathematics)">
+            <div class="modal-title">Add New Subject</div>
+            <input type="text" class="modal-input" id="subjectInput" placeholder="Enter subject name">
             <div class="modal-actions">
-                <button class="btn-secondary" onclick="hideAddSubjectModal()">Cancel</button>
-                <button class="btn-primary" onclick="addSubject()">Add Subject</button>
+                <button class="modal-btn secondary" onclick="hideModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="addSubject()">Add</button>
             </div>
         </div>
     </div>
 
-    <script src="../js/utils.js"></script>
-    <script src="../js/notes.js"></script>
+    <script>
+        // Notes App - Complete iPad-like Experience
+        class NotesApp {
+            constructor() {
+                this.subjects = [];
+                this.notes = [];
+                this.currentNote = null;
+                this.currentSubject = 'all';
+                this.currentMode = 'draw';
+                this.currentTool = 'pen';
+                this.currentColor = '#000';
+                this.brushSize = 3;
+                this.canvas = null;
+                this.ctx = null;
+                this.isDrawing = false;
+                this.undoStack = [];
+                this.init();
+            }
+
+            init() {
+                this.loadData();
+                this.setupCanvas();
+                this.setupEventListeners();
+                this.render();
+                console.log('✅ Notes App Ready');
+            }
+
+            loadData() {
+                this.subjects = JSON.parse(localStorage.getItem('notes_subjects') || '["Math", "Physics", "Chemistry", "History", "English"]');
+                this.notes = JSON.parse(localStorage.getItem('notes_data') || '[]');
+                
+                if (this.notes.length === 0) {
+                    this.notes.push({
+                        id: Date.now(),
+                        title: 'Welcome Note',
+                        content: 'Welcome to your smart notebook! Start writing or drawing.',
+                        subject: 'Math',
+                        created: new Date().toISOString(),
+                        updated: new Date().toISOString(),
+                        drawing: null
+                    });
+                    this.saveData();
+                }
+            }
+
+            saveData() {
+                localStorage.setItem('notes_subjects', JSON.stringify(this.subjects));
+                localStorage.setItem('notes_data', JSON.stringify(this.notes));
+                console.log('💾 Data saved');
+            }
+
+            setupCanvas() {
+                this.canvas = document.getElementById('drawingCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                // Mouse events
+                this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+                this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+                this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+                this.canvas.addEventListener('mouseleave', () => this.stopDrawing());
+                
+                // Touch events (mobile/stylus)
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    this.startDrawing(touch);
+                });
+                
+                this.canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    this.draw(touch);
+                });
+                
+                this.canvas.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.stopDrawing();
+                });
+                
+                this.updateDrawingSettings();
+                console.log('🎨 Canvas ready');
+            }
+
+            resizeCanvas() {
+                const container = document.getElementById('canvasContainer');
+                const rect = container.getBoundingClientRect();
+                
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+                this.canvas.style.width = rect.width + 'px';
+                this.canvas.style.height = rect.height + 'px';
+                
+                this.updateDrawingSettings();
+                console.log('📐 Canvas resized:', rect.width, 'x', rect.height);
+            }
+
+            updateDrawingSettings() {
+                if (!this.ctx) return;
+                
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+                this.ctx.strokeStyle = this.currentColor;
+                this.ctx.lineWidth = this.brushSize;
+                
+                if (this.currentTool === 'highlighter') {
+                    this.ctx.globalCompositeOperation = 'multiply';
+                    this.ctx.globalAlpha = 0.3;
+                    this.ctx.lineWidth = this.brushSize * 4;
+                } else if (this.currentTool === 'eraser') {
+                    this.ctx.globalCompositeOperation = 'destination-out';
+                    this.ctx.globalAlpha = 1;
+                    this.ctx.lineWidth = this.brushSize * 3;
+                } else {
+                    this.ctx.globalCompositeOperation = 'source-over';
+                    this.ctx.globalAlpha = 1;
+                }
+            }
+
+            startDrawing(e) {
+                this.isDrawing = true;
+                this.undoStack.push(this.canvas.toDataURL());
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y);
+                console.log('✏️ Started drawing');
+            }
+
+            draw(e) {
+                if (!this.isDrawing) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                this.ctx.lineTo(x, y);
+                this.ctx.stroke();
+            }
+
+            stopDrawing() {
+                if (!this.isDrawing) return;
+                this.isDrawing = false;
+                this.saveCurrentNote();
+                console.log('✅ Stopped drawing');
+            }
+
+            setupEventListeners() {
+                const titleInput = document.getElementById('titleInput');
+                const textEditor = document.getElementById('textEditor');
+                
+                titleInput.addEventListener('input', () => this.saveCurrentNote());
+                textEditor.addEventListener('input', () => this.saveCurrentNote());
+            }
+
+            render() {
+                this.renderSubjects();
+                this.renderNotes();
+                this.showEmptyState();
+            }
+
+            renderSubjects() {
+                const container = document.getElementById('subjectsList');
+                let html = `<div class="subject-item ${this.currentSubject === 'all' ? 'active' : ''}" onclick="app.selectSubject('all')">
+                    <span>All Notes</span>
+                    <span class="notes-count">${this.notes.length}</span>
+                </div>`;
+                
+                this.subjects.forEach(subject => {
+                    const count = this.notes.filter(n => n.subject === subject).length;
+                    html += `<div class="subject-item ${this.currentSubject === subject ? 'active' : ''}" onclick="app.selectSubject('${subject}')">
+                        <span>${subject}</span>
+                        <span class="notes-count">${count}</span>
+                    </div>`;
+                });
+                
+                container.innerHTML = html;
+            }
+
+            renderNotes() {
+                const container = document.getElementById('notesList');
+                let filtered = this.currentSubject === 'all' ? this.notes : this.notes.filter(n => n.subject === this.currentSubject);
+                filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+                
+                let html = '';
+                filtered.forEach(note => {
+                    const preview = note.content.substring(0, 100);
+                    const date = new Date(note.updated).toLocaleDateString();
+                    html += `<div class="note-item ${this.currentNote?.id === note.id ? 'active' : ''}" onclick="app.selectNote(${note.id})">
+                        <div class="note-title">${note.title || 'Untitled'}</div>
+                        <div class="note-preview">${preview}${preview.length >= 100 ? '...' : ''}</div>
+                        <div class="note-date">${date}</div>
+                    </div>`;
+                });
+                
+                container.innerHTML = html || '<div style="text-align:center;padding:20px;color:#666;">No notes</div>';
+            }
+
+            selectSubject(subject) {
+                this.currentSubject = subject;
+                this.render();
+                console.log('Selected subject:', subject);
+            }
+
+            selectNote(id) {
+                this.currentNote = this.notes.find(n => n.id === id);
+                if (this.currentNote) {
+                    this.loadNoteIntoEditor();
+                    this.showEditor();
+                    this.render();
+                    console.log('Opened note:', this.currentNote.title);
+                }
+            }
+
+            loadNoteIntoEditor() {
+                if (!this.currentNote) return;
+                
+                document.getElementById('titleInput').value = this.currentNote.title;
+                document.getElementById('textEditor').value = this.currentNote.content;
+                
+                if (this.currentNote.drawing) {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                        this.ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = this.currentNote.drawing;
+                } else {
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+            }
+
+            saveCurrentNote() {
+                if (!this.currentNote) return;
+                
+                this.currentNote.title = document.getElementById('titleInput').value;
+                this.currentNote.content = document.getElementById('textEditor').value;
+                this.currentNote.drawing = this.canvas.toDataURL();
+                this.currentNote.updated = new Date().toISOString();
+                
+                const index = this.notes.findIndex(n => n.id === this.currentNote.id);
+                if (index !== -1) {
+                    this.notes[index] = this.currentNote;
+                }
+                
+                this.saveData();
+                this.renderNotes();
+            }
+
+            createNewNote() {
+                const note = {
+                    id: Date.now(),
+                    title: 'New Note',
+                    content: '',
+                    subject: this.currentSubject === 'all' ? this.subjects[0] : this.currentSubject,
+                    created: new Date().toISOString(),
+                    updated: new Date().toISOString(),
+                    drawing: null
+                };
+                
+                this.notes.unshift(note);
+                this.currentNote = note;
+                this.saveData();
+                this.loadNoteIntoEditor();
+                this.showEditor();
+                this.render();
+                
+                setTimeout(() => {
+                    document.getElementById('titleInput').focus();
+                    document.getElementById('titleInput').select();
+                }, 100);
+                
+                console.log('Created new note');
+            }
+
+            showEditor() {
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('canvasContainer').style.display = 'block';
+            }
+
+            showEmptyState() {
+                if (!this.currentNote) {
+                    document.getElementById('emptyState').style.display = 'flex';
+                    document.getElementById('canvasContainer').style.display = 'none';
+                }
+            }
+
+            addSubject(name) {
+                if (name && !this.subjects.includes(name)) {
+                    this.subjects.push(name);
+                    this.saveData();
+                    this.render();
+                    console.log('Added subject:', name);
+                    return true;
+                }
+                return false;
+            }
+
+            setMode(mode) {
+                this.currentMode = mode;
+                document.getElementById('textModeBtn').classList.toggle('active', mode === 'text');
+                document.getElementById('drawModeBtn').classList.toggle('active', mode === 'draw');
+                document.getElementById('textEditor').style.display = mode === 'text' ? 'block' : 'none';
+                console.log('Mode:', mode);
+            }
+
+            setTool(tool) {
+                this.currentTool = tool;
+                this.updateDrawingSettings();
+                document.querySelectorAll('[data-tool]').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+                console.log('Tool:', tool);
+            }
+
+            setColor(color) {
+                this.currentColor = color;
+                this.updateDrawingSettings();
+                document.querySelectorAll('[data-color]').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-color="${color}"]`).classList.add('active');
+                console.log('Color:', color);
+            }
+
+            setBrushSize(size) {
+                this.brushSize = parseInt(size);
+                this.updateDrawingSettings();
+                document.getElementById('sizeDisplay').textContent = size + 'px';
+            }
+
+            undo() {
+                if (this.undoStack.length === 0) return;
+                const lastState = this.undoStack.pop();
+                const img = new Image();
+                img.onload = () => {
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.ctx.drawImage(img, 0, 0);
+                };
+                img.src = lastState;
+            }
+
+            clear() {
+                this.undoStack.push(this.canvas.toDataURL());
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.saveCurrentNote();
+                console.log('Canvas cleared');
+            }
+        }
+
+        // Global app instance
+        let app;
+
+        // Global functions
+        function goHome() {
+            window.location.href = '../index.html';
+        }
+
+        function createNewNote() {
+            app.createNewNote();
+        }
+
+        function showAddSubjectModal() {
+            document.getElementById('addSubjectModal').classList.add('show');
+            document.getElementById('subjectInput').focus();
+        }
+
+        function hideModal() {
+            document.getElementById('addSubjectModal').classList.remove('show');
+        }
+
+        function addSubject() {
+            const input = document.getElementById('subjectInput');
+            const name = input.value.trim();
+            
+            if (app.addSubject(name)) {
+                hideModal();
+                input.value = '';
+                alert('Subject added successfully!');
+            } else {
+                alert('Please enter a valid subject name!');
+            }
+        }
+
+        function setMode(mode) {
+            app.setMode(mode);
+        }
+
+        function setTool(tool) {
+            app.setTool(tool);
+        }
+
+        function setColor(color) {
+            app.setColor(color);
+        }
+
+        function setBrushSize(size) {
+            app.setBrushSize(size);
+        }
+
+        function undoAction() {
+            app.undo();
+        }
+
+        function clearCanvas() {
+            if (confirm('Clear the entire canvas?')) {
+                app.clear();
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new NotesApp();
+            console.log('🚀 Notes App Started');
+        });
+
+        // Modal handling
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                hideModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.id === 'subjectInput' && e.key === 'Enter') {
+                addSubject();
+            }
+            if (e.key === 'Escape') {
+                hideModal();
+            }
+        });
+    </script>
 </body>
 </html>
