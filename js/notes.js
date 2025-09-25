@@ -1,4 +1,4 @@
-// Smart Book Tablet - Notes App Logic - COMPLETELY FIXED
+// Smart Book Tablet - Notes App Logic - FINAL FIXED VERSION
 class NotesApp {
     constructor() {
         this.currentSubject = 'all';
@@ -20,44 +20,57 @@ class NotesApp {
     }
 
     init() {
+        console.log('🚀 Initializing Notes App...');
         this.loadData();
         this.setupCanvas();
-        this.setupEventListeners();
+        this.setupEventListeners();  
         this.renderSubjects();
         this.renderNotes();
         this.showEmptyEditor();
-        console.log('📝 Notes App initialized');
+        console.log('✅ Notes App initialized successfully');
     }
 
     loadData() {
-        // Load from localStorage properly
-        const savedSubjects = localStorage.getItem('smartbook_subjects');
-        const savedNotes = localStorage.getItem('smartbook_notes');
-        
-        if (savedSubjects) {
-            this.subjects = JSON.parse(savedSubjects);
-        }
-        
-        if (savedNotes) {
-            this.notes = JSON.parse(savedNotes);
-        }
-        
-        if (this.notes.length === 0) {
+        try {
+            const savedSubjects = localStorage.getItem('smartbook_subjects');
+            const savedNotes = localStorage.getItem('smartbook_notes');
+            
+            if (savedSubjects) {
+                this.subjects = JSON.parse(savedSubjects);
+                console.log('📁 Loaded subjects:', this.subjects);
+            }
+            
+            if (savedNotes) {
+                this.notes = JSON.parse(savedNotes);
+                console.log('📝 Loaded notes:', this.notes.length, 'notes');
+            }
+            
+            if (this.notes.length === 0) {
+                this.createSampleNote();
+            }
+        } catch (error) {
+            console.error('❌ Error loading data:', error);
+            this.subjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'History'];
+            this.notes = [];
             this.createSampleNote();
         }
     }
 
     saveData() {
-        localStorage.setItem('smartbook_subjects', JSON.stringify(this.subjects));
-        localStorage.setItem('smartbook_notes', JSON.stringify(this.notes));
-        console.log('💾 Data saved successfully');
+        try {
+            localStorage.setItem('smartbook_subjects', JSON.stringify(this.subjects));
+            localStorage.setItem('smartbook_notes', JSON.stringify(this.notes));
+            console.log('💾 Data saved successfully');
+        } catch (error) {
+            console.error('❌ Error saving data:', error);
+        }
     }
 
     createSampleNote() {
         const sampleNote = {
             id: 'sample_' + Date.now(),
             title: 'Welcome to Smart Book',
-            content: 'This is your first note! You can write here and draw too.',
+            content: 'This is your first note! You can write here and draw too. Try the drawing mode!',
             subject: 'Mathematics',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -66,11 +79,15 @@ class NotesApp {
         
         this.notes.push(sampleNote);
         this.saveData();
+        console.log('📝 Created sample note');
     }
 
     renderSubjects() {
         const subjectsList = document.getElementById('subjectsList');
-        if (!subjectsList) return;
+        if (!subjectsList) {
+            console.error('❌ subjectsList element not found');
+            return;
+        }
 
         let html = `
             <div class="subject-item ${this.currentSubject === 'all' ? 'active' : ''}" onclick="selectSubject('all')">
@@ -90,6 +107,7 @@ class NotesApp {
         });
 
         subjectsList.innerHTML = html;
+        console.log('📁 Subjects rendered');
     }
 
     renderNotes() {
@@ -97,7 +115,10 @@ class NotesApp {
         const emptyState = document.getElementById('emptyState');
         const currentSubjectEl = document.getElementById('currentSubject');
         
-        if (!notesGrid) return;
+        if (!notesGrid) {
+            console.error('❌ notesGrid element not found');
+            return;
+        }
 
         if (currentSubjectEl) {
             currentSubjectEl.textContent = this.currentSubject === 'all' ? 'All Notes' : this.currentSubject;
@@ -111,23 +132,23 @@ class NotesApp {
 
         if (filteredNotes.length === 0) {
             notesGrid.style.display = 'none';
-            emptyState.style.display = 'flex';
+            if (emptyState) emptyState.style.display = 'flex';
             return;
         }
 
         notesGrid.style.display = 'block';
-        emptyState.style.display = 'none';
+        if (emptyState) emptyState.style.display = 'none';
 
         let html = '';
         filteredNotes.forEach(note => {
-            const preview = note.content.replace(/<[^>]*>/g, '').substring(0, 100) + '...';
+            const preview = note.content.replace(/<[^>]*>/g, '').substring(0, 100);
             const date = new Date(note.updatedAt).toLocaleDateString();
             
             html += `
                 <div class="note-card ${this.currentNote && this.currentNote.id === note.id ? 'active' : ''}" 
                      onclick="selectNote('${note.id}')">
                     <div class="note-title">${note.title || 'Untitled'}</div>
-                    <div class="note-preview">${preview}</div>
+                    <div class="note-preview">${preview}${preview.length >= 100 ? '...' : ''}</div>
                     <div class="note-meta">
                         <span>${note.subject}</span>
                         <span>${date}</span>
@@ -137,17 +158,25 @@ class NotesApp {
         });
 
         notesGrid.innerHTML = html;
+        console.log('📝 Notes rendered:', filteredNotes.length, 'notes');
     }
 
     showEditor() {
-        document.getElementById('editorEmpty').style.display = 'none';
-        document.getElementById('textEditor').style.display = 'flex';
+        const editorEmpty = document.getElementById('editorEmpty');
+        const textEditor = document.getElementById('textEditor');
+        
+        if (editorEmpty) editorEmpty.style.display = 'none';
+        if (textEditor) textEditor.style.display = 'flex';
     }
 
     showEmptyEditor() {
-        document.getElementById('editorEmpty').style.display = 'flex';
-        document.getElementById('textEditor').style.display = 'none';
-        document.getElementById('drawingContainer').style.display = 'none';
+        const editorEmpty = document.getElementById('editorEmpty');
+        const textEditor = document.getElementById('textEditor');
+        const drawingContainer = document.getElementById('drawingContainer');
+        
+        if (editorEmpty) editorEmpty.style.display = 'flex';
+        if (textEditor) textEditor.style.display = 'none';
+        if (drawingContainer) drawingContainer.style.display = 'none';
     }
 
     loadNoteIntoEditor(note) {
@@ -171,6 +200,8 @@ class NotesApp {
         } else if (this.ctx) {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
+        
+        console.log('📖 Note loaded into editor:', note.title);
     }
 
     saveCurrentNote() {
@@ -200,19 +231,41 @@ class NotesApp {
 
     setupCanvas() {
         this.canvas = document.getElementById('drawingCanvas');
-        if (!this.canvas) return;
+        if (!this.canvas) {
+            console.log('⚠️ Drawing canvas not found');
+            return;
+        }
 
         this.ctx = this.canvas.getContext('2d');
         this.resizeCanvas();
         
+        console.log('🎨 Setting up canvas events...');
+
         // Mouse events
-        this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
-        this.canvas.addEventListener('mousemove', (e) => this.draw(e));
-        this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+        this.canvas.addEventListener('mousedown', (e) => {
+            console.log('🖱️ Mouse down');
+            this.startDrawing(e);
+        });
         
-        // Touch events
+        this.canvas.addEventListener('mousemove', (e) => {
+            if (this.isDrawing) {
+                this.draw(e);
+            }
+        });
+        
+        this.canvas.addEventListener('mouseup', () => {
+            console.log('🖱️ Mouse up');
+            this.stopDrawing();
+        });
+        
+        this.canvas.addEventListener('mouseleave', () => {
+            this.stopDrawing();
+        });
+        
+        // Touch events for mobile/stylus
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            console.log('👆 Touch start');
             const touch = e.touches[0];
             const rect = this.canvas.getBoundingClientRect();
             this.startDrawing({
@@ -223,17 +276,22 @@ class NotesApp {
         
         this.canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
-            const touch = e.touches[0];
-            this.draw({
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
+            if (this.isDrawing) {
+                const touch = e.touches[0];
+                this.draw({
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+            }
         });
         
         this.canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
+            console.log('👆 Touch end');
             this.stopDrawing();
         });
+
+        console.log('✅ Canvas setup complete');
     }
 
     resizeCanvas() {
@@ -243,6 +301,7 @@ class NotesApp {
         this.canvas.width = rect.width;
         this.canvas.height = rect.height;
         this.updateDrawingSettings();
+        console.log('📐 Canvas resized:', rect.width, 'x', rect.height);
     }
 
     updateDrawingSettings() {
@@ -265,6 +324,8 @@ class NotesApp {
             this.ctx.globalCompositeOperation = 'source-over';
             this.ctx.globalAlpha = 1;
         }
+        
+        console.log('🎨 Drawing settings updated:', this.drawingTool, this.drawingColor, this.brushSize + 'px');
     }
 
     startDrawing(e) {
@@ -279,6 +340,8 @@ class NotesApp {
         
         this.ctx.beginPath();
         this.ctx.moveTo(this.lastX, this.lastY);
+        
+        console.log('✏️ Started drawing at:', this.lastX, this.lastY);
     }
 
     draw(e) {
@@ -297,9 +360,13 @@ class NotesApp {
 
     stopDrawing() {
         if (!this.isDrawing) return;
+        
         this.isDrawing = false;
         this.ctx.beginPath();
         
+        console.log('✅ Stopped drawing');
+        
+        // Auto-save after drawing
         setTimeout(() => {
             if (this.currentNote) {
                 this.saveCurrentNote();
@@ -308,6 +375,8 @@ class NotesApp {
     }
 
     setupEventListeners() {
+        console.log('🎧 Setting up event listeners...');
+        
         const titleInput = document.getElementById('noteTitle');
         const contentEditor = document.getElementById('editorContent');
         
@@ -317,6 +386,7 @@ class NotesApp {
                     setTimeout(() => this.saveCurrentNote(), 1000);
                 }
             });
+            console.log('✅ Title input listener added');
         }
 
         if (contentEditor) {
@@ -325,43 +395,48 @@ class NotesApp {
                     setTimeout(() => this.saveCurrentNote(), 1000);
                 }
             });
+            console.log('✅ Content editor listener added');
         }
 
         window.addEventListener('resize', () => this.resizeCanvas());
+        console.log('✅ All event listeners setup complete');
     }
 }
 
 let notesApp;
 
-// FIXED GLOBAL FUNCTIONS
+// GLOBAL FUNCTIONS - COMPLETELY FIXED
 function goHome() {
+    console.log('🏠 Going home...');
     window.location.href = '../index.html';
 }
 
 function selectSubject(subject) {
+    console.log('📁 Selecting subject:', subject);
     notesApp.currentSubject = subject;
     notesApp.renderSubjects();
     notesApp.renderNotes();
     notesApp.showEmptyEditor();
     notesApp.currentNote = null;
-    console.log('Selected subject:', subject);
 }
 
 function selectNote(noteId) {
+    console.log('📝 Selecting note:', noteId);
     const note = notesApp.notes.find(n => n.id === noteId);
     if (note) {
         notesApp.currentNote = note;
         notesApp.loadNoteIntoEditor(note);
         notesApp.renderNotes();
-        console.log('Opened note:', note.title);
     }
 }
 
 function createNewNote() {
+    console.log('➕ Creating new note...');
+    
     const currentSubject = notesApp.currentSubject === 'all' ? 'General' : notesApp.currentSubject;
     
     const newNote = {
-        id: 'note_' + Date.now(),
+        id: 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
         title: 'New Note',
         content: '',
         subject: currentSubject,
@@ -384,47 +459,58 @@ function createNewNote() {
         }
     }, 100);
     
-    console.log('Created new note');
+    console.log('✅ New note created:', newNote.id);
 }
 
 function showAddSubjectModal() {
+    console.log('➕ Showing add subject modal...');
     const modal = document.getElementById('addSubjectModal');
     if (modal) {
-        modal.style.display = 'flex';
+        modal.classList.add('show');
         const input = document.getElementById('subjectNameInput');
         if (input) {
             input.value = '';
-            input.focus();
+            setTimeout(() => input.focus(), 100);
         }
+        console.log('✅ Modal shown');
+    } else {
+        console.error('❌ Modal not found');
     }
 }
 
 function hideAddSubjectModal() {
+    console.log('❌ Hiding add subject modal...');
     const modal = document.getElementById('addSubjectModal');
     if (modal) {
-        modal.style.display = 'none';
+        modal.classList.remove('show');
     }
 }
 
 function addSubject() {
+    console.log('➕ Adding subject...');
     const input = document.getElementById('subjectNameInput');
     const subjectName = input ? input.value.trim() : '';
+    
+    console.log('Subject name entered:', subjectName);
     
     if (subjectName && !notesApp.subjects.includes(subjectName)) {
         notesApp.subjects.push(subjectName);
         notesApp.saveData();
         notesApp.renderSubjects();
         hideAddSubjectModal();
-        console.log('Added subject:', subjectName);
-        alert('Subject added successfully!');
+        console.log('✅ Subject added:', subjectName);
+        alert('Subject "' + subjectName + '" added successfully!');
     } else if (notesApp.subjects.includes(subjectName)) {
         alert('Subject already exists!');
+        console.log('⚠️ Subject already exists');
     } else {
         alert('Please enter a subject name!');
+        console.log('⚠️ Empty subject name');
     }
 }
 
 function formatText(command) {
+    console.log('📝 Formatting text:', command);
     const editor = document.getElementById('editorContent');
     if (!editor) return;
     
@@ -439,6 +525,7 @@ function formatText(command) {
 }
 
 function toggleDrawingMode() {
+    console.log('🎨 Toggling drawing mode...');
     notesApp.isDrawingMode = !notesApp.isDrawingMode;
     
     const textEditor = document.getElementById('textEditor');
@@ -446,24 +533,29 @@ function toggleDrawingMode() {
     const drawModeBtn = document.getElementById('drawModeBtn');
     
     if (notesApp.isDrawingMode) {
-        textEditor.style.display = 'none';
-        drawingContainer.style.display = 'flex';
+        if (textEditor) textEditor.style.display = 'none';
+        if (drawingContainer) drawingContainer.style.display = 'flex';
         if (drawModeBtn) {
             drawModeBtn.style.background = '#007AFF';
             drawModeBtn.style.color = 'white';
         }
-        setTimeout(() => notesApp.resizeCanvas(), 100);
+        setTimeout(() => {
+            notesApp.resizeCanvas();
+        }, 100);
+        console.log('✅ Drawing mode ON');
     } else {
-        textEditor.style.display = 'flex';
-        drawingContainer.style.display = 'none';
+        if (textEditor) textEditor.style.display = 'flex';
+        if (drawingContainer) drawingContainer.style.display = 'none';
         if (drawModeBtn) {
             drawModeBtn.style.background = '';
             drawModeBtn.style.color = '';
         }
+        console.log('✅ Drawing mode OFF');
     }
 }
 
 function selectTool(tool) {
+    console.log('🛠️ Selecting tool:', tool);
     notesApp.drawingTool = tool;
     notesApp.updateDrawingSettings();
     
@@ -473,6 +565,7 @@ function selectTool(tool) {
 }
 
 function selectColor(color) {
+    console.log('🎨 Selecting color:', color);
     notesApp.drawingColor = color;
     notesApp.updateDrawingSettings();
     
@@ -482,6 +575,7 @@ function selectColor(color) {
 }
 
 function updateBrushSize(size) {
+    console.log('📏 Updating brush size:', size);
     notesApp.brushSize = parseInt(size);
     notesApp.updateDrawingSettings();
     
@@ -490,6 +584,7 @@ function updateBrushSize(size) {
 }
 
 function undoDrawing() {
+    console.log('↶ Undoing drawing...');
     if (notesApp.undoStack.length === 0) return;
     
     const lastState = notesApp.undoStack.pop();
@@ -502,6 +597,7 @@ function undoDrawing() {
 }
 
 function clearCanvas() {
+    console.log('🗑️ Clearing canvas...');
     if (!notesApp.ctx) return;
     
     notesApp.undoStack.push(notesApp.canvas.toDataURL());
@@ -522,13 +618,22 @@ function toggleMenu() {
     alert('Menu feature coming soon!');
 }
 
-// Initialize
+// INITIALIZE - COMPLETELY FIXED
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 DOM loaded, initializing Notes App...');
     notesApp = new NotesApp();
-    console.log('📝 Notes App ready');
+    
+    // Test all buttons
+    setTimeout(() => {
+        console.log('🧪 Testing elements...');
+        console.log('New Note Button:', document.querySelector('.new-note-btn') ? '✅' : '❌');
+        console.log('Add Subject Button:', document.querySelector('.add-subject-btn') ? '✅' : '❌');
+        console.log('Modal:', document.getElementById('addSubjectModal') ? '✅' : '❌');
+        console.log('Canvas:', document.getElementById('drawingCanvas') ? '✅' : '❌');
+    }, 1000);
 });
 
-// Modal handling
+// MODAL HANDLING - COMPLETELY FIXED
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
         hideAddSubjectModal();
@@ -537,6 +642,13 @@ document.addEventListener('click', (e) => {
 
 document.addEventListener('keydown', (e) => {
     if (e.target.id === 'subjectNameInput' && e.key === 'Enter') {
+        e.preventDefault();
         addSubject();
     }
+    
+    if (e.key === 'Escape') {
+        hideAddSubjectModal();
+    }
 });
+
+console.log('📝 Notes app script loaded');
