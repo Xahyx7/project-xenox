@@ -1,0 +1,66 @@
+{
+    "name": "Smart Book Tablet",
+    "short_name": "Smart Book",
+    "description": "Complete digital learning platform with notes, books, and AI assistance",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1B1B1D",
+    "theme_color": "#007AFF",
+    "orientation": "any",
+    "scope": "/",
+    "lang": "en-US",
+    "categories": ["education", "books", "productivity"],
+    "icons": [
+        {
+            "src": "assets/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Notes",
+            "short_name": "Notes",
+            "description": "Open Notes app",
+            "url": "/apps/notes.html",
+            "icons": [
+                {
+                    "src": "assets/images/notes.jpg",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Book Mart",
+            "short_name": "Books",
+            "description": "Browse textbooks",
+            "url": "/apps/bookmart.html",
+            "icons": [
+                {
+                    "src": "assets/images/bookmart.jpg",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "assets/images/wallpaper.png",
+            "sizes": "1280x720",
+            "type": "image/png"
+        }
+    ]
+}
