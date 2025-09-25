@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes - Smart Book</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/notes.css">
+    <meta name="theme-color" content="#1B1B1D">
+</head>
+<body>
+    <div class="notes-container">
+        <!-- Header -->
+        <header class="notes-header">
+            <button class="btn-icon back-btn" onclick="goHome()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <h1 class="app-title">Notes</h1>
+            <div class="header-actions">
+                <button class="btn-icon search-btn" onclick="toggleSearch()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </button>
+                <button class="btn-icon menu-btn" onclick="toggleMenu()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="1"/>
+                        <circle cx="19" cy="12" r="1"/>
+                        <circle cx="5" cy="12" r="1"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Subjects</h2>
+                    <button class="btn-icon add-subject-btn" onclick="showAddSubjectModal()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="subjects-list" id="subjectsList">
+                    <!-- Subjects loaded by JS -->
+                </div>
+            </aside>
+
+            <!-- Notes List -->
+            <div class="notes-list" id="notesList">
+                <div class="notes-list-header">
+                    <h3 id="currentSubject">All Notes</h3>
+                    <button class="btn-primary new-note-btn" onclick="createNewNote()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        New Note
+                    </button>
+                </div>
+
+                <div class="notes-grid" id="notesGrid">
+                    <!-- Notes loaded by JS -->
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">📝</div>
+                    <h3>No notes yet</h3>
+                    <p>Create your first note to get started</p>
+                    <button class="btn-primary" onclick="createNewNote()">Create Note</button>
+                </div>
+            </div>
+
+            <!-- Editor -->
+            <div class="editor-container" id="editorContainer">
+                <!-- Text Editor -->
+                <div class="text-editor" id="textEditor">
+                    <div class="editor-header">
+                        <input type="text" class="note-title" id="noteTitle" placeholder="Title">
+                        <div class="editor-actions">
+                            <button class="btn-icon" onclick="toggleDrawingMode()" id="drawModeBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-icon" onclick="formatText('bold')">
+                                <strong>B</strong>
+                            </button>
+                            <button class="btn-icon" onclick="formatText('italic')">
+                                <em>I</em>
+                            </button>
+                            <button class="btn-icon" onclick="formatText('underline')">
+                                <u>U</u>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="formatting-toolbar" id="formattingToolbar">
+                        <div class="toolbar-group">
+                            <button class="format-btn" onclick="formatText('heading1')">H1</button>
+                            <button class="format-btn" onclick="formatText('heading2')">H2</button>
+                            <button class="format-btn" onclick="formatText('heading3')">H3</button>
+                        </div>
+                        <div class="toolbar-group">
+                            <button class="format-btn" onclick="formatText('bulletList')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"/>
+                                    <line x1="8" y1="12" x2="21" y2="12"/>
+                                    <line x1="8" y1="18" x2="21" y2="18"/>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                </svg>
+                            </button>
+                            <button class="format-btn" onclick="formatText('numberList')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="10" y1="6" x2="21" y2="6"/>
+                                    <line x1="10" y1="12" x2="21" y2="12"/>
+                                    <line x1="10" y1="18" x2="21" y2="18"/>
+                                    <circle cx="4" cy="6" r="1"/>
+                                    <circle cx="4" cy="12" r="1"/>
+                                    <circle cx="4" cy="18" r="1"/>
+                                </svg>
+                            </button>
+                            <button class="format-btn" onclick="formatText('checklist')">☐</button>
+                        </div>
+                    </div>
+
+                    <div class="editor-content" contenteditable="true" id="editorContent" placeholder="Start writing..."></div>
+                </div>
+
+                <!-- Drawing Canvas -->
+                <div class="drawing-container" id="drawingContainer">
+                    <div class="drawing-toolbar">
+                        <div class="tool-group">
+                            <button class="tool-btn active" data-tool="pen" onclick="selectTool('pen')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                                </svg>
+                            </button>
+                            <button class="tool-btn" data-tool="highlighter" onclick="selectTool('highlighter')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 11l3 3L22 4"/>
+                                </svg>
+                            </button>
+                            <button class="tool-btn" data-tool="eraser" onclick="selectTool('eraser')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 20H8l-4-4a1 1 0 010-1.41l4.41-4.41A2 2 0 019.83 9h8.84a2 2 0 011.41.59L22 12l-2 8z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="color-group" id="colorPalette">
+                            <div class="color-option active" data-color="#000000" style="background: #000000" onclick="selectColor('#000000')"></div>
+                            <div class="color-option" data-color="#007AFF" style="background: #007AFF" onclick="selectColor('#007AFF')"></div>
+                            <div class="color-option" data-color="#34C759" style="background: #34C759" onclick="selectColor('#34C759')"></div>
+                            <div class="color-option" data-color="#FF9500" style="background: #FF9500" onclick="selectColor('#FF9500')"></div>
+                            <div class="color-option" data-color="#FF3B30" style="background: #FF3B30" onclick="selectColor('#FF3B30')"></div>
+                            <div class="color-option" data-color="#AF52DE" style="background: #AF52DE" onclick="selectColor('#AF52DE')"></div>
+                        </div>
+
+                        <div class="size-group">
+                            <input type="range" class="size-slider" id="brushSize" min="1" max="20" value="3" onchange="updateBrushSize(this.value)">
+                            <span class="size-label" id="sizeLabel">3px</span>
+                        </div>
+
+                        <div class="action-group">
+                            <button class="tool-btn" onclick="undoDrawing()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 7v6h6"/>
+                                    <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/>
+                                </svg>
+                            </button>
+                            <button class="tool-btn" onclick="clearCanvas()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18"/>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
+                </div>
+
+                <div class="editor-empty" id="editorEmpty">
+                    <div class="empty-icon">📄</div>
+                    <h3>Select a note to start editing</h3>
+                    <p>Choose a note from the list or create a new one</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div class="modal" id="addSubjectModal">
+        <div class="modal-content">
+            <h3>Add Subject</h3>
+            <input type="text" class="form-input" id="subjectNameInput" placeholder="Subject name (e.g. Mathematics)">
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="hideAddSubjectModal()">Cancel</button>
+                <button class="btn-primary" onclick="addSubject()">Add Subject</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/notes.js"></script>
+</body>
+</html>
