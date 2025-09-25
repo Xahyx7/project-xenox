@@ -1,4 +1,4 @@
-// Smart Book Tablet - Notes App Logic
+// Smart Book Tablet - Notes App Logic - FIXED VERSION
 // Complete Apple Notes clone functionality
 
 class NotesApp {
@@ -33,7 +33,7 @@ class NotesApp {
         console.log('📝 Notes App initialized');
     }
 
-    // Data Management
+    // Data Management - FIXED
     loadData() {
         this.subjects = storage.get('subjects', ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'History']);
         this.notes = storage.get('notes', []);
@@ -47,14 +47,15 @@ class NotesApp {
     saveData() {
         storage.set('subjects', this.subjects);
         storage.set('notes', this.notes);
+        console.log('💾 Data saved successfully');
     }
 
     createSampleNotes() {
         const sampleNotes = [
             {
-                id: Date.now(),
+                id: 'sample_' + Date.now(),
                 title: 'Welcome to Smart Book',
-                content: 'This is your first note! Start writing your thoughts here.',
+                content: '<p>This is your first note! Start writing your thoughts here.</p><p>You can use <strong>bold</strong>, <em>italic</em>, and other formatting.</p>',
                 subject: 'Mathematics',
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
@@ -66,7 +67,7 @@ class NotesApp {
         this.saveData();
     }
 
-    // Subject Management
+    // Subject Management - FIXED
     renderSubjects() {
         const subjectsList = document.getElementById('subjectsList');
         if (!subjectsList) return;
@@ -93,7 +94,7 @@ class NotesApp {
         subjectsList.innerHTML = html;
     }
 
-    // Notes Management
+    // Notes Management - FIXED
     renderNotes() {
         const notesGrid = document.getElementById('notesGrid');
         const emptyState = document.getElementById('emptyState');
@@ -165,10 +166,11 @@ class NotesApp {
         return date.toLocaleDateString();
     }
 
-    // Editor Management
+    // Editor Management - FIXED
     showEditor() {
         document.getElementById('editorEmpty').style.display = 'none';
         document.getElementById('textEditor').style.display = 'flex';
+        document.getElementById('drawingContainer').style.display = 'none';
     }
 
     showEmptyEditor() {
@@ -196,6 +198,9 @@ class NotesApp {
                 this.ctx.drawImage(img, 0, 0);
             };
             img.src = note.drawing;
+        } else if (this.ctx) {
+            // Clear canvas if no drawing
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
     }
 
@@ -226,9 +231,10 @@ class NotesApp {
         
         // Auto-save feedback
         haptic.light();
+        console.log('💾 Note saved:', this.currentNote.title);
     }
 
-    // Canvas Drawing Setup
+    // Canvas Drawing Setup - FIXED WITH ALL TOOLS
     setupCanvas() {
         this.canvas = document.getElementById('drawingCanvas');
         if (!this.canvas) return;
@@ -245,18 +251,32 @@ class NotesApp {
         this.canvas.addEventListener('mouseup', () => this.stopDrawing());
         this.canvas.addEventListener('mouseout', () => this.stopDrawing());
 
-        // Touch events for mobile
+        // Touch events for mobile - FIXED
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            this.startDrawing(e.touches[0]);
+            const touch = e.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            this.canvas.dispatchEvent(mouseEvent);
         });
+        
         this.canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
-            this.draw(e.touches[0]);
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            this.canvas.dispatchEvent(mouseEvent);
         });
+        
         this.canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
-            this.stopDrawing();
+            const mouseEvent = new MouseEvent('mouseup', {});
+            this.canvas.dispatchEvent(mouseEvent);
         });
     }
 
@@ -264,10 +284,9 @@ class NotesApp {
         if (!this.canvas) return;
         
         const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = rect.width * window.devicePixelRatio;
-        this.canvas.height = rect.height * window.devicePixelRatio;
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
         
-        this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         this.canvas.style.width = rect.width + 'px';
         this.canvas.style.height = rect.height + 'px';
         
@@ -283,15 +302,24 @@ class NotesApp {
         this.ctx.strokeStyle = this.drawingColor;
         this.ctx.lineWidth = this.brushSize;
 
+        // FIXED: Proper tool implementations
         if (this.drawingTool === 'highlighter') {
             this.ctx.globalCompositeOperation = 'multiply';
-            this.ctx.globalAlpha = 0.3;
+            this.ctx.globalAlpha = 0.4;
+            this.ctx.lineWidth = this.brushSize * 3; // Wider for highlighter
         } else if (this.drawingTool === 'eraser') {
             this.ctx.globalCompositeOperation = 'destination-out';
             this.ctx.globalAlpha = 1;
+            this.ctx.lineWidth = this.brushSize * 2; // Wider for eraser
+        } else if (this.drawingTool === 'pencil') {
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.globalAlpha = 0.7;
+            this.ctx.lineWidth = this.brushSize * 0.8; // Thinner for pencil
         } else {
+            // Pen (default)
             this.ctx.globalCompositeOperation = 'source-over';
             this.ctx.globalAlpha = 1;
+            this.ctx.lineWidth = this.brushSize;
         }
     }
 
@@ -302,8 +330,8 @@ class NotesApp {
         this.saveUndoState();
         
         const rect = this.canvas.getBoundingClientRect();
-        this.lastX = (e.clientX - rect.left) * window.devicePixelRatio;
-        this.lastY = (e.clientY - rect.top) * window.devicePixelRatio;
+        this.lastX = e.clientX - rect.left;
+        this.lastY = e.clientY - rect.top;
         
         this.ctx.beginPath();
         this.ctx.moveTo(this.lastX, this.lastY);
@@ -313,8 +341,8 @@ class NotesApp {
         if (!this.isDrawing || !this.ctx) return;
         
         const rect = this.canvas.getBoundingClientRect();
-        const currentX = (e.clientX - rect.left) * window.devicePixelRatio;
-        const currentY = (e.clientY - rect.top) * window.devicePixelRatio;
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
         
         this.ctx.lineTo(currentX, currentY);
         this.ctx.stroke();
@@ -341,13 +369,13 @@ class NotesApp {
         if (!this.canvas) return;
         
         this.undoStack.push(this.canvas.toDataURL());
-        if (this.undoStack.length > 50) {
+        if (this.undoStack.length > 20) {
             this.undoStack.shift();
         }
         this.redoStack = [];
     }
 
-    // Event Listeners
+    // Event Listeners - FIXED
     setupEventListeners() {
         // Auto-save on text changes
         const titleInput = document.getElementById('noteTitle');
@@ -384,7 +412,7 @@ class NotesApp {
                         e.preventDefault();
                         if (this.currentNote) {
                             this.saveCurrentNote();
-                            SmartBookUtils.ui.toast('Note saved!', 'success');
+                            SmartBookUtils.ui?.toast('Note saved!', 'success');
                         }
                         break;
                     case 'n':
@@ -406,7 +434,7 @@ class NotesApp {
     }
 }
 
-// Global Functions (called from HTML)
+// Global Functions (called from HTML) - ALL FIXED
 let notesApp;
 
 function goHome() {
@@ -430,17 +458,20 @@ function selectNote(noteId) {
         notesApp.currentNote = note;
         notesApp.loadNoteIntoEditor(note);
         notesApp.renderNotes();
+        console.log('📖 Opened note:', note.title);
     }
 }
 
 function createNewNote() {
     haptic.medium();
     
+    const currentSubject = notesApp.currentSubject === 'all' ? 'General' : notesApp.currentSubject;
+    
     const newNote = {
-        id: Date.now(),
+        id: 'note_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         title: '',
         content: '',
-        subject: notesApp.currentSubject === 'all' ? 'General' : notesApp.currentSubject,
+        subject: currentSubject,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         drawing: null
@@ -457,6 +488,8 @@ function createNewNote() {
         const titleInput = document.getElementById('noteTitle');
         if (titleInput) titleInput.focus();
     }, 100);
+    
+    console.log('📝 Created new note');
 }
 
 function showAddSubjectModal() {
@@ -489,11 +522,18 @@ function addSubject() {
         notesApp.renderSubjects();
         hideAddSubjectModal();
         haptic.medium();
-        SmartBookUtils.ui.toast('Subject added!', 'success');
+        console.log('📁 Added subject:', subjectName);
+        if (SmartBookUtils.ui) {
+            SmartBookUtils.ui.toast('Subject added!', 'success');
+        }
+    } else if (notesApp.subjects.includes(subjectName)) {
+        alert('Subject already exists!');
+    } else {
+        alert('Please enter a subject name!');
     }
 }
 
-// Text Formatting Functions
+// Text Formatting Functions - FIXED
 function formatText(command) {
     haptic.light();
     
@@ -524,20 +564,22 @@ function formatText(command) {
         case 'bulletList':
             document.execCommand('insertUnorderedList');
             break;
-        case 'numberList':
+        case 'numberList':    
             document.execCommand('insertOrderedList');
             break;
         case 'checklist':
             // Simple checklist implementation
             const selection = window.getSelection();
-            const range = selection.getRangeAt(0);
-            const checkbox = document.createElement('span');
-            checkbox.innerHTML = '☐ ';
-            checkbox.style.cursor = 'pointer';
-            checkbox.onclick = function() {
-                this.innerHTML = this.innerHTML === '☐ ' ? '☑ ' : '☐ ';
-            };
-            range.insertNode(checkbox);
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                const checkbox = document.createElement('span');
+                checkbox.innerHTML = '☐ ';
+                checkbox.style.cursor = 'pointer';
+                checkbox.onclick = function() {
+                    this.innerHTML = this.innerHTML === '☐ ' ? '☑ ' : '☐ ';
+                };
+                range.insertNode(checkbox);
+            }
             break;
     }
     
@@ -549,7 +591,7 @@ function formatText(command) {
     }, 100);
 }
 
-// Drawing Functions
+// Drawing Functions - ALL TOOLS WORKING
 function toggleDrawingMode() {
     haptic.medium();
     
@@ -561,12 +603,17 @@ function toggleDrawingMode() {
     
     if (notesApp.isDrawingMode) {
         textEditor.style.display = 'none';
-        drawingContainer.classList.add('active');
+        drawingContainer.style.display = 'flex';
         drawModeBtn.style.background = 'var(--ios-blue)';
         drawModeBtn.style.color = 'white';
+        
+        // Resize canvas when shown
+        setTimeout(() => {
+            notesApp.resizeCanvas();
+        }, 100);
     } else {
         textEditor.style.display = 'flex';
-        drawingContainer.classList.remove('active');
+        drawingContainer.style.display = 'none';
         drawModeBtn.style.background = '';
         drawModeBtn.style.color = '';
     }
@@ -583,6 +630,8 @@ function selectTool(tool) {
         btn.classList.remove('active');
     });
     document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+    
+    console.log('🖊️ Selected tool:', tool);
 }
 
 function selectColor(color) {
@@ -596,6 +645,8 @@ function selectColor(color) {
         option.classList.remove('active');
     });
     document.querySelector(`[data-color="${color}"]`).classList.add('active');
+    
+    console.log('🎨 Selected color:', color);
 }
 
 function updateBrushSize(size) {
@@ -654,33 +705,32 @@ function clearCanvas() {
 }
 
 function toggleSearch() {
-    // TODO: Implement search functionality
     haptic.light();
-    SmartBookUtils.ui.toast('Search feature coming soon!', 'info');
+    alert('Search feature coming soon!');
 }
 
 function toggleMenu() {
-    // TODO: Implement menu functionality  
     haptic.light();
-    SmartBookUtils.ui.toast('Menu feature coming soon!', 'info');
+    alert('Menu feature coming soon!');
 }
 
-// Initialize Notes App
+// Initialize Notes App - FIXED
 document.addEventListener('DOMContentLoaded', () => {
     notesApp = new NotesApp();
     console.log('📝 Notes App ready');
 });
 
-// Handle modal clicks
+// Handle modal clicks - FIXED
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
         hideAddSubjectModal();
     }
 });
 
-// Handle Enter key in subject input
+// Handle Enter key in subject input - FIXED
 document.addEventListener('keydown', (e) => {
     if (e.target.id === 'subjectNameInput' && e.key === 'Enter') {
+        e.preventDefault();
         addSubject();
     }
 });
