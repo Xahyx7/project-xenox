@@ -1,6 +1,4 @@
-// Smart Book Tablet - Book Mart Logic
-// NCERT Book Marketplace
-
+// Smart Book Tablet - Book Mart Logic - COMPLETELY FIXED
 class BookMart {
     constructor() {
         this.books = [];
@@ -19,12 +17,10 @@ class BookMart {
         this.setupEventListeners();
         this.renderBooks();
         this.updateRecentlyViewed();
-        
         console.log('📚 Book Mart initialized');
     }
 
     loadBooks() {
-        // NCERT Class 10 Books Data
         this.books = [
             {
                 id: 'science10',
@@ -36,8 +32,7 @@ class BookMart {
                 pages: '312',
                 cover: '../assets/book-covers/science10.jpg',
                 pdf: '../books/science10.pdf',
-                description: 'Comprehensive science textbook covering Physics, Chemistry, and Biology topics including Light, Life Processes, and Natural Resource Management.',
-                features: ['Updated 2024 curriculum', 'Practical experiments', 'Colorful diagrams', 'Chapter-wise exercises']
+                description: 'Comprehensive science textbook covering Physics, Chemistry, and Biology.'
             },
             {
                 id: 'math10',
@@ -49,8 +44,7 @@ class BookMart {
                 pages: '280',
                 cover: '../assets/book-covers/math10.jpg',
                 pdf: '../books/math10.pdf',
-                description: 'Complete mathematics curriculum covering Real Numbers, Polynomials, Linear Equations, Coordinate Geometry, and Trigonometry.',
-                features: ['Step-by-step solutions', 'Practice exercises', 'Mathematical proofs', 'Real-world applications']
+                description: 'Complete mathematics curriculum covering algebra, geometry, and trigonometry.'
             },
             {
                 id: 'social10',
@@ -62,8 +56,7 @@ class BookMart {
                 pages: '456',
                 cover: '../assets/book-covers/social10.jpg',
                 pdf: '../books/social10.pdf',
-                description: 'Integrated social science covering History, Geography, Political Science, and Economics in one comprehensive volume.',
-                features: ['Maps and illustrations', 'Case studies', 'Current affairs', 'Activity-based learning']
+                description: 'Integrated social science covering History, Geography, and Economics.'
             },
             {
                 id: 'english10',
@@ -75,8 +68,7 @@ class BookMart {
                 pages: '198',
                 cover: '../assets/book-covers/english10.jpg',
                 pdf: '../books/english10.pdf',
-                description: 'English literature textbook featuring prose, poetry, and drama from renowned authors to develop language skills.',
-                features: ['Classic literature', 'Grammar exercises', 'Writing skills', 'Comprehension passages']
+                description: 'English literature with prose, poetry, and drama.'
             },
             {
                 id: 'hindi10',
@@ -88,8 +80,7 @@ class BookMart {
                 pages: '224',
                 cover: '../assets/book-covers/hindi10.jpg',
                 pdf: '../books/hindi10.pdf',
-                description: 'Hindi literature collection featuring stories, poems, and essays from celebrated Hindi writers.',
-                features: ['Classical Hindi literature', 'Modern stories', 'Poetry appreciation', 'Cultural values']
+                description: 'Hindi literature collection with stories and poems.'
             },
             {
                 id: 'geography10',
@@ -101,8 +92,7 @@ class BookMart {
                 pages: '176',
                 cover: '../assets/book-covers/geography10.jpg',
                 pdf: '../books/geography10.pdf',
-                description: 'Geography textbook focusing on resources, agriculture, water resources, and sustainable development.',
-                features: ['Detailed maps', 'Satellite imagery', 'Environmental awareness', 'Resource management']
+                description: 'Geography textbook focusing on resources and development.'
             },
             {
                 id: 'history10',
@@ -114,8 +104,7 @@ class BookMart {
                 pages: '234',
                 cover: '../assets/book-covers/history10.jpg',
                 pdf: '../books/history10.pdf',
-                description: 'Modern Indian history covering nationalism, independence movement, and post-independence developments.',
-                features: ['Historical photographs', 'Timeline charts', 'Primary sources', 'Cultural heritage']
+                description: 'Modern Indian history and independence movement.'
             },
             {
                 id: 'economics10',
@@ -127,8 +116,7 @@ class BookMart {
                 pages: '168',
                 cover: '../assets/book-covers/economics10.jpg',
                 pdf: '../books/economics10.pdf',
-                description: 'Introduction to economics covering development, sectors of economy, money, credit, and globalization.',
-                features: ['Real-world examples', 'Statistical data', 'Economic indicators', 'Policy analysis']
+                description: 'Introduction to economics and development.'
             },
             {
                 id: 'politics10',
@@ -140,31 +128,28 @@ class BookMart {
                 pages: '142',
                 cover: '../assets/book-covers/politics10.jpg',
                 pdf: '../books/politics10.pdf',
-                description: 'Civics textbook exploring democracy, federalism, gender, religion, and challenges to democracy.',
-                features: ['Constitutional principles', 'Democratic processes', 'Case studies', 'Current politics']
+                description: 'Civics textbook exploring democracy and politics.'
             }
         ];
 
-        // Save to storage
-        storage.set('books', this.books);
+        localStorage.setItem('smartbook_books', JSON.stringify(this.books));
     }
 
     loadRecentlyViewed() {
-        this.recentlyViewed = storage.get('recentlyViewed', []);
+        const saved = localStorage.getItem('smartbook_recentbooks');
+        if (saved) {
+            this.recentlyViewed = JSON.parse(saved);
+        }
     }
 
     saveRecentlyViewed() {
-        storage.set('recentlyViewed', this.recentlyViewed);
+        localStorage.setItem('smartbook_recentbooks', JSON.stringify(this.recentlyViewed));
     }
 
     addToRecentlyViewed(book) {
-        // Remove if already exists
         this.recentlyViewed = this.recentlyViewed.filter(b => b.id !== book.id);
-        
-        // Add to beginning
         this.recentlyViewed.unshift(book);
         
-        // Keep only last 5
         if (this.recentlyViewed.length > 5) {
             this.recentlyViewed = this.recentlyViewed.slice(0, 5);
         }
@@ -176,18 +161,15 @@ class BookMart {
     getFilteredBooks() {
         let filtered = this.books;
 
-        // Filter by category
         if (this.currentCategory !== 'all') {
             filtered = filtered.filter(book => book.category === this.currentCategory);
         }
 
-        // Filter by search query
         if (this.searchQuery.trim()) {
             const query = this.searchQuery.toLowerCase();
             filtered = filtered.filter(book => 
                 book.title.toLowerCase().includes(query) ||
-                book.subject.toLowerCase().includes(query) ||
-                book.description.toLowerCase().includes(query)
+                book.subject.toLowerCase().includes(query)
             );
         }
 
@@ -203,9 +185,9 @@ class BookMart {
         if (!booksGrid) return;
 
         // Show loading
-        loadingState.classList.add('show');
+        if (loadingState) loadingState.style.display = 'flex';
         booksGrid.style.display = 'none';
-        emptyState.classList.remove('show');
+        if (emptyState) emptyState.style.display = 'none';
 
         // Update section title
         const categoryNames = {
@@ -222,29 +204,27 @@ class BookMart {
                 categoryNames[this.currentCategory];
         }
 
-        // Simulate loading delay
+        // Simulate loading
         setTimeout(() => {
             const filteredBooks = this.getFilteredBooks();
             
-            loadingState.classList.remove('show');
+            if (loadingState) loadingState.style.display = 'none';
 
             if (filteredBooks.length === 0) {
-                emptyState.classList.add('show');
+                if (emptyState) emptyState.style.display = 'flex';
                 booksGrid.style.display = 'none';
                 return;
             }
 
-            // Set view class
             booksGrid.className = `books-grid ${this.currentView}-view`;
             booksGrid.style.display = 'grid';
-            emptyState.classList.remove('show');
+            if (emptyState) emptyState.style.display = 'none';
 
-            // Render books
             let html = '';
             filteredBooks.forEach(book => {
                 html += `
-                    <div class="book-card" onclick="showBookDetail('${book.id}')" data-book-id="${book.id}">
-                        <img src="${book.cover}" alt="${book.title}" class="book-cover" loading="lazy">
+                    <div class="book-card" onclick="showBookDetail('${book.id}')">
+                        <img src="${book.cover}" alt="${book.title}" class="book-cover" loading="lazy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI2NyIgdmlld0JveD0iMCAwIDIwMCAyNjciIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjY3IiBmaWxsPSIjNDI0MjQyIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTMzIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0Ij5Cb29rIENvdmVyPC90ZXh0Pgo8L3N2Zz4K'">
                         <div class="book-info">
                             <h3 class="book-title">${book.title}</h3>
                             <p class="book-subject">${book.subject}</p>
@@ -258,13 +238,7 @@ class BookMart {
             });
 
             booksGrid.innerHTML = html;
-            
-            // Add animation
-            document.querySelectorAll('.book-card').forEach((card, index) => {
-                card.style.animationDelay = `${index * 0.1}s`;
-            });
-
-        }, 800);
+        }, 300);
     }
 
     updateRecentlyViewed() {
@@ -274,17 +248,17 @@ class BookMart {
         if (!recentlyViewed || !recentBooksList) return;
 
         if (this.recentlyViewed.length === 0) {
-            recentlyViewed.classList.remove('show');
+            recentlyViewed.style.display = 'none';
             return;
         }
 
-        recentlyViewed.classList.add('show');
+        recentlyViewed.style.display = 'block';
         
         let html = '';
         this.recentlyViewed.forEach(book => {
             html += `
                 <div class="recent-book-item" onclick="showBookDetail('${book.id}')">
-                    <img src="${book.cover}" alt="${book.title}" class="recent-book-cover">
+                    <img src="${book.cover}" alt="${book.title}" class="recent-book-cover" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDEyMCAxNjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTYwIiBmaWxsPSIjNDI0MjQyIi8+Cjx0ZXh0IHg9IjYwIiB5PSI4MCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCI+Qm9vazwvdGV4dD4KPC9zdmc+Cg=='">
                     <div class="recent-book-title">${book.title}</div>
                 </div>
             `;
@@ -294,122 +268,100 @@ class BookMart {
     }
 
     setupEventListeners() {
-        // Search input
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
-            searchInput.addEventListener('input', SmartBookUtils.performance.debounce((e) => {
-                this.handleSearch(e.target.value);
-            }, 300));
+            searchInput.addEventListener('input', (e) => {
+                this.searchQuery = e.target.value.trim();
+                
+                const clearBtn = document.getElementById('clearSearchBtn');
+                if (clearBtn) {
+                    clearBtn.style.display = this.searchQuery.length > 0 ? 'block' : 'none';
+                }
+                
+                this.renderBooks();
+            });
         }
 
-        // Modal close on backdrop click
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 closeBookModal();
             }
         });
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeBookModal();
-                if (document.getElementById('searchContainer').classList.contains('show')) {
+                const searchContainer = document.getElementById('searchContainer');
+                if (searchContainer && searchContainer.classList.contains('show')) {
                     toggleSearch();
-                }
-            }
-            
-            if (e.ctrlKey || e.metaKey) {
-                switch(e.key) {
-                    case 'f':
-                        e.preventDefault();
-                        toggleSearch();
-                        break;
                 }
             }
         });
     }
-
-    handleSearch(query) {
-        this.searchQuery = query.trim();
-        
-        const clearBtn = document.getElementById('clearSearchBtn');
-        if (clearBtn) {
-            clearBtn.classList.toggle('show', this.searchQuery.length > 0);
-        }
-        
-        this.renderBooks();
-        haptic.light();
-    }
 }
 
-// Global Functions (called from HTML)
 let bookMart;
 
+// FIXED GLOBAL FUNCTIONS
 function goHome() {
-    haptic.medium();
     window.location.href = '../index.html';
 }
 
 function toggleSearch() {
-    haptic.light();
     const searchContainer = document.getElementById('searchContainer');
     const searchInput = document.getElementById('searchInput');
     
-    if (searchContainer.classList.contains('show')) {
-        searchContainer.classList.remove('show');
-    } else {
-        searchContainer.classList.add('show');
-        setTimeout(() => {
-            if (searchInput) searchInput.focus();
-        }, 300);
+    if (searchContainer) {
+        if (searchContainer.classList.contains('show')) {
+            searchContainer.classList.remove('show');
+        } else {
+            searchContainer.classList.add('show');
+            if (searchInput) {
+                setTimeout(() => searchInput.focus(), 300);
+            }
+        }
     }
 }
 
 function clearSearch() {
-    haptic.light();
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
     
     if (searchInput) searchInput.value = '';
-    if (clearBtn) clearBtn.classList.remove('show');
+    if (clearBtn) clearBtn.style.display = 'none';
     
     bookMart.searchQuery = '';
     bookMart.renderBooks();
 }
 
-function handleSearch(value) {
-    bookMart.handleSearch(value);
-}
-
 function selectCategory(category) {
-    haptic.medium();
     bookMart.currentCategory = category;
     
-    // Update UI
     document.querySelectorAll('.category-card').forEach(card => {
         card.classList.remove('active');
     });
-    document.querySelector(`[data-category="${category}"]`).classList.add('active');
+    
+    const categoryCard = document.querySelector(`[data-category="${category}"]`);
+    if (categoryCard) categoryCard.classList.add('active');
     
     bookMart.renderBooks();
+    console.log('Selected category:', category);
 }
 
 function setView(view) {
-    haptic.light();
     bookMart.currentView = view;
     
-    // Update UI
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.querySelector(`[data-view="${view}"]`).classList.add('active');
+    
+    const viewBtn = document.querySelector(`[data-view="${view}"]`);
+    if (viewBtn) viewBtn.classList.add('active');
     
     bookMart.renderBooks();
 }
 
 function showBookDetail(bookId) {
-    haptic.medium();
-    
     const book = bookMart.books.find(b => b.id === bookId);
     if (!book) return;
     
@@ -417,70 +369,67 @@ function showBookDetail(bookId) {
     bookMart.addToRecentlyViewed(book);
     
     // Populate modal
-    document.getElementById('modalBookCover').src = book.cover;
-    document.getElementById('modalBookTitle').textContent = book.title;
-    document.getElementById('modalBookSubject').textContent = book.subject;
-    document.getElementById('modalBookLanguage').textContent = book.language.charAt(0).toUpperCase() + book.language.slice(1);
-    document.getElementById('modalBookPages').textContent = book.pages + ' pages';
-    document.getElementById('modalBookDescription').textContent = book.description;
+    const elements = {
+        modalBookCover: document.getElementById('modalBookCover'),
+        modalBookTitle: document.getElementById('modalBookTitle'),
+        modalBookSubject: document.getElementById('modalBookSubject'),
+        modalBookLanguage: document.getElementById('modalBookLanguage'),
+        modalBookPages: document.getElementById('modalBookPages'),
+        modalBookDescription: document.getElementById('modalBookDescription')
+    };
+
+    if (elements.modalBookCover) elements.modalBookCover.src = book.cover;
+    if (elements.modalBookTitle) elements.modalBookTitle.textContent = book.title;
+    if (elements.modalBookSubject) elements.modalBookSubject.textContent = book.subject;
+    if (elements.modalBookLanguage) elements.modalBookLanguage.textContent = book.language.charAt(0).toUpperCase() + book.language.slice(1);
+    if (elements.modalBookPages) elements.modalBookPages.textContent = book.pages + ' pages';
+    if (elements.modalBookDescription) elements.modalBookDescription.textContent = book.description;
     
     // Show modal
     const modal = document.getElementById('bookModal');
-    modal.classList.add('show');
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
     
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
-    
-    console.log(`📖 Opened book: ${book.title}`);
+    console.log('📖 Opened book:', book.title);
 }
 
 function closeBookModal() {
-    haptic.light();
     const modal = document.getElementById('bookModal');
-    modal.classList.remove('show');
-    
-    // Restore body scroll
-    document.body.style.overflow = 'auto';
-    
+    if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
+    }
     bookMart.selectedBook = null;
 }
 
 function readBook() {
     if (!bookMart.selectedBook) return;
     
-    haptic.heavy();
-    
     try {
-        // Open PDF in new tab
         const pdfUrl = bookMart.selectedBook.pdf;
         const pdfWindow = window.open(pdfUrl, '_blank');
         
         if (!pdfWindow) {
-            // Fallback if popup blocked
             window.location.href = pdfUrl;
         }
         
-        console.log(`📚 Reading: ${bookMart.selectedBook.title}`);
-        SmartBookUtils.ui.toast('Opening book...', 'success');
+        console.log('📚 Reading:', bookMart.selectedBook.title);
+        alert('Opening book...');
         
-        // Close modal after opening
-        setTimeout(() => {
-            closeBookModal();
-        }, 500);
+        setTimeout(() => closeBookModal(), 500);
         
     } catch (error) {
         console.error('Failed to open book:', error);
-        SmartBookUtils.ui.toast('Failed to open book. Please try again.', 'error');
+        alert('Failed to open book. Please try again.');
     }
 }
 
 function downloadBook() {
     if (!bookMart.selectedBook) return;
     
-    haptic.heavy();
-    
     try {
-        // Create download link
         const link = document.createElement('a');
         link.href = bookMart.selectedBook.pdf;
         link.download = `${bookMart.selectedBook.title}.pdf`;
@@ -490,31 +439,21 @@ function downloadBook() {
         link.click();
         document.body.removeChild(link);
         
-        console.log(`💾 Downloading: ${bookMart.selectedBook.title}`);
-        SmartBookUtils.ui.toast('Download started!', 'success');
+        console.log('💾 Downloading:', bookMart.selectedBook.title);
+        alert('Download started!');
         
     } catch (error) {
         console.error('Failed to download book:', error);
-        SmartBookUtils.ui.toast('Download failed. Please try again.', 'error');
+        alert('Download failed. Please try again.');
     }
 }
 
 function showCart() {
-    haptic.light();
-    SmartBookUtils.ui.toast('Cart feature coming soon!', 'info');
+    alert('Cart feature coming soon!');
 }
 
-// Initialize Book Mart
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     bookMart = new BookMart();
     console.log('📚 Book Mart ready');
-});
-
-// Handle page visibility for auto-pause/resume
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-        console.log('📚 Book Mart paused');
-    } else {
-        console.log('📚 Book Mart resumed');
-    }
 });
