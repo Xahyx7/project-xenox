@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Smart Book</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <meta name="theme-color" content="#1B1B1D">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg-primary);
+            text-align: center;
+            padding: var(--space-8);
+        }
+        
+        .ai-redirect-container {
+            max-width: 500px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .ai-icon {
+            font-size: 4rem;
+            margin-bottom: var(--space-6);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .ai-title {
+            font-size: var(--font-2xl);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+        
+        .ai-description {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-8);
+            line-height: 1.6;
+        }
+        
+        .redirect-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+        
+        .countdown {
+            color: var(--text-tertiary);
+            font-size: var(--font-sm);
+            margin-top: var(--space-4);
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-redirect-container">
+        <div class="ai-icon">🤖</div>
+        <h1 class="ai-title">AI Assistant</h1>
+        <p class="ai-description">
+            You're being redirected to Perplexity AI - your intelligent study companion for research, homework help, and learning support.
+        </p>
+        
+        <div class="redirect-actions">
+            <button class="btn-primary" onclick="redirectToAI()" id="redirectBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                    <polyline points="15,3 21,3 21,9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                Open AI Assistant
+            </button>
+            
+            <button class="btn-secondary" onclick="goBack()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Go Back
+            </button>
+        </div>
+        
+        <div class="countdown" id="countdown">
+            Redirecting automatically in <span id="countdownTimer">5</span> seconds...
+        </div>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script>
+        let countdownTimer = 5;
+        let countdownInterval;
+
+        function updateCountdown() {
+            const timerElement = document.getElementById('countdownTimer');
+            const countdownElement = document.getElementById('countdown');
+            
+            if (countdownTimer <= 0) {
+                clearInterval(countdownInterval);
+                countdownElement.textContent = 'Redirecting now...';
+                redirectToAI();
+                return;
+            }
+            
+            if (timerElement) {
+                timerElement.textContent = countdownTimer;
+            }
+            
+            countdownTimer--;
+        }
+
+        function redirectToAI() {
+            haptic.medium();
+            
+            try {
+                // Try to open in new tab first
+                const aiWindow = window.open('https://www.perplexity.ai', '_blank');
+                
+                if (!aiWindow) {
+                    // Fallback if popup blocked
+                    window.location.href = 'https://www.perplexity.ai';
+                } else {
+                    // If new tab opened successfully, close this tab after delay
+                    setTimeout(() => {
+                        window.history.back();
+                    }, 1000);
+                }
+                
+                console.log('🤖 AI Assistant opened');
+            } catch (error) {
+                console.error('Failed to open AI Assistant:', error);
+                alert('Unable to open AI Assistant. Please check your internet connection.');
+            }
+        }
+
+        function goBack() {
+            haptic.light();
+            window.history.back();
+        }
+
+        // Start countdown on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            countdownInterval = setInterval(updateCountdown, 1000);
+            
+            // Pause countdown if user interacts with page
+            document.addEventListener('click', () => {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').style.display = 'none';
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').style.display = 'none';
+                }
+                
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    redirectToAI();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    goBack();
+                }
+            });
+            
+            console.log('🤖 AI Assistant redirect page loaded');
+        });
+    </script>
+</body>
+</html>
