@@ -639,8 +639,8 @@
 
                 <div class="tool-group" id="drawingTools">
                     <button class="tool-btn active" onclick="setTool('pen')" data-tool="pen" title="Pen">✏️</button>
-                    <button class="tool-btn" onclick="setTool('highlighter')" data-tool="highlighter" title="Highlighter">🖍️</button>
-                    <button class="tool-btn" onclick="setTool('eraser')" data-tool="eraser" title="Eraser">🧹</button>
+                    <button class="tool-btn" onclick="setTool('highlighter')" data-tool="highlighter" title="Highlighter">ߖ️</button>
+                    <button class="tool-btn" onclick="setTool('eraser')" data-tool="eraser" title="Eraser">ߧ</button>
                 </div>
 
                 <div class="color-picker" id="colorPicker">
@@ -659,7 +659,7 @@
 
                 <div class="tool-group">
                     <button class="tool-btn" onclick="undoAction()" title="Undo">↶</button>
-                    <button class="tool-btn" onclick="clearCanvas()" title="Clear Canvas">🗑️</button>
+                    <button class="tool-btn" onclick="clearCanvas()" title="Clear Canvas">ߗ️</button>
                 </div>
             </div>
 
@@ -671,7 +671,7 @@
 
             <!-- Empty State -->
             <div class="empty-state" id="emptyState">
-                <div class="empty-icon">📝</div>
+                <div class="empty-icon">ߓ</div>
                 <h3>Select a note to start editing</h3>
                 <p>Choose a note from the sidebar or create a new one</p>
             </div>
@@ -756,7 +756,7 @@
             saveData() {
                 localStorage.setItem('notes_subjects', JSON.stringify(this.subjects));
                 localStorage.setItem('notes_data', JSON.stringify(this.notes));
-                console.log('💾 Data saved');
+                console.log('ߒ Data saved');
             }
 
             setupCanvas() {
@@ -791,7 +791,7 @@
                 });
                 
                 this.updateDrawingSettings();
-                console.log('🎨 Canvas ready');
+                console.log('ߎ Canvas ready');
             }
 
             resizeCanvas() {
@@ -804,7 +804,7 @@
                 this.canvas.style.height = rect.height + 'px';
                 
                 this.updateDrawingSettings();
-                console.log('📐 Canvas resized:', rect.width, 'x', rect.height);
+                console.log('ߓ Canvas resized:', rect.width, 'x', rect.height);
             }
 
             updateDrawingSettings() {
@@ -1150,7 +1150,7 @@
         // Initialize app
         document.addEventListener('DOMContentLoaded', () => {
             app = new NotesApp();
-            console.log('🚀 Professional Notes App Started');
+            console.log('ߚ Professional Notes App Started');
         });
 
         // Modal handling
