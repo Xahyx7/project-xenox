@@ -1,5 +1,5 @@
 /* Smart Book Tablet - Notes App Complete Styles */
-/* Apple Professional Design with Animations */
+/* Apple Professional Design with Perfect Matching Sidebars */
 
 * {
     margin: 0;
@@ -144,6 +144,7 @@ body {
     opacity: 0.9;
 }
 
+/* Subject Items with Visual Indicators */
 .subject-item {
     padding: 12px 16px;
     margin: 4px 0;
@@ -156,6 +157,25 @@ body {
     border: 1px solid transparent;
     position: relative;
     overflow: hidden;
+}
+
+.subject-item:not(.all-notes)::after {
+    content: '▶';
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 3;
+}
+
+.subject-item:not(.all-notes):hover::after {
+    opacity: 1;
+    right: 35px;
+    color: #5AC8FA;
 }
 
 /* Hover Effect */
@@ -184,6 +204,12 @@ body {
     color: #5AC8FA;
 }
 
+.subject-item .subject-name,
+.subject-item .notes-count {
+    position: relative;
+    z-index: 2;
+}
+
 .notes-count {
     background: rgba(255, 255, 255, 0.15);
     padding: 4px 10px;
@@ -191,8 +217,6 @@ body {
     font-size: 12px;
     font-weight: 500;
     backdrop-filter: blur(10px);
-    z-index: 2;
-    position: relative;
 }
 
 .subject-item.active .notes-count {
@@ -264,18 +288,18 @@ body {
     font-weight: 500;
 }
 
-/* Notes Flyout */
+/* Notes Flyout - Perfect Match with Subject Sidebar */
 .notes-flyout {
     position: fixed;
     top: 0;
     left: 320px;
-    width: 350px;
+    width: 320px;
     height: 100vh;
-    background: linear-gradient(135deg, #f8fcff 0%, #eef7ff 100%);
-    color: #1d1d1f;
-    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.15);
-    z-index: 200;
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, #1c1c1e 0%, #2c2c2e 100%);
+    color: white;
+    box-shadow: 4px 0 50px rgba(0, 0, 0, 0.5);
+    z-index: 90;
+    border-right: 1px solid rgba(84, 84, 88, 0.6);
     transform: translateX(-100%);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -292,40 +316,43 @@ body {
 }
 
 .flyout-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(84, 84, 88, 0.3);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .flyout-header span {
     font-size: 20px;
     font-weight: 700;
-    color: #1d1d1f;
+    background: linear-gradient(135deg, #007AFF, #5AC8FA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .flyout-close {
-    background: rgba(0, 122, 255, 0.1);
-    color: #007AFF;
-    font-size: 24px;
+    background: linear-gradient(135deg, #007AFF, #5AC8FA);
+    color: white;
+    font-size: 18px;
     font-weight: bold;
     border: none;
     border-radius: 12px;
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
 }
 
 .flyout-close:hover {
-    background: rgba(0, 122, 255, 0.2);
     transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.4);
 }
 
 .flyout-content {
@@ -338,38 +365,115 @@ body {
 .flyout-notes-list {
     flex: 1;
     overflow-y: auto;
-    padding: 0;
+    padding: 20px;
+}
+
+.flyout-notes-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.flyout-notes-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.flyout-notes-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
 }
 
 .flyout-note-item {
-    padding: 16px 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 16px;
+    margin: 8px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 4px solid transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
 }
 
 .flyout-note-item:hover {
-    background: rgba(0, 122, 255, 0.08);
-    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-.flyout-note-item:last-child {
-    border-bottom: none;
+.flyout-note-item:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(90, 200, 250, 0.05));
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 .flyout-note-item strong {
     display: block;
     font-size: 16px;
     font-weight: 600;
-    margin-bottom: 4px;
-    color: #1d1d1f;
+    margin-bottom: 8px;
+    color: #ffffff;
+    position: relative;
+    z-index: 2;
 }
 
 .flyout-note-item div {
-    font-size: 13px;
-    color: #666;
-    line-height: 1.3;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.4;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+.flyout-note-item .note-date {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    position: relative;
+    z-index: 2;
+}
+
+.flyout-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.flyout-empty-state .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.4;
+}
+
+.flyout-empty-state p {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.flyout-empty-state button {
+    background: linear-gradient(135deg, #007AFF, #5AC8FA);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+}
+
+.flyout-empty-state button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
 }
 
 /* Editor Area */
@@ -747,6 +851,10 @@ body {
         font-size: 20px;
         width: 100%;
         margin: 8px 0;
+    }
+    
+    .subject-item:not(.all-notes)::after {
+        display: none;
     }
 }
 
