@@ -5,671 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes - Smart Book</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-
+        /* Only relevant CSS... for brevity – you can paste the style block from the 'professional apple style' version plus the .notes-flyout CSS */
+        /* START STYLES */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+            background: #1c1c1e;
             color: white;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
-            position: fixed;
         }
-
-        .notes-app {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Sidebar */
+        .notes-app { display: flex; height: 100vh; width: 100vw; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);}
         .sidebar {
             width: 320px;
             background: linear-gradient(145deg, #1c1c1e 0%, #2c2c2e 100%);
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(84, 84, 88, 0.6);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(0);
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(20px);
-            z-index: 100;
-            position: relative;
+            display: flex; flex-direction: column;
+            border-right: 1px solid rgba(84,84,88,0.6);
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+            position: relative; z-index: 100;
         }
-
-        .sidebar.collapsed {
-            transform: translateX(-320px);
-        }
-
+        .sidebar.collapsed { transform: translateX(-320px);}
         .sidebar-toggle {
-            position: absolute;
-            right: -44px;
-            top: 20px;
-            width: 44px;
-            height: 44px;
-            background: rgba(28, 28, 30, 0.8);
-            border: 1px solid rgba(84, 84, 88, 0.6);
-            border-radius: 0 12px 12px 0;
-            color: #007AFF;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(20px);
-            z-index: 101;
-        }
-
-        .sidebar-toggle:hover {
-            background: rgba(0, 122, 255, 0.1);
-            border-color: rgba(0, 122, 255, 0.3);
-        }
-
-        .sidebar-header {
-            padding: 24px 20px;
-            border-bottom: 1px solid rgba(84, 84, 88, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .sidebar-title {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #007AFF, #5AC8FA);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .add-btn {
-            background: linear-gradient(135deg, #007AFF, #5AC8FA);
-            color: white;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 18px;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
-        }
-
-        .add-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
-        }
-
-        .add-btn:active {
-            transform: scale(0.95);
-        }
-
-        .subjects-section {
-            padding: 20px;
-            border-bottom: 1px solid rgba(84, 84, 88, 0.3);
-        }
-
-        .section-title {
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #ffffff;
-            opacity: 0.8;
-        }
-
-        .subject-item {
-            padding: 12px 16px;
-            margin: 4px 0;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid transparent;
-        }
-
-        .subject-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .subject-item.active {
-            background: linear-gradient(135deg, rgba(0, 122, 255, 0.2), rgba(90, 200, 250, 0.1));
-            border-color: rgba(0, 122, 255, 0.3);
-            color: #5AC8FA;
-        }
-
-        .notes-count {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-
-        .subject-item.active .notes-count {
-            background: rgba(0, 122, 255, 0.3);
-            color: white;
-        }
-
-        .notes-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .notes-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .notes-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .notes-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-        }
-
-        .note-item {
-            padding: 16px;
-            margin: 8px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 4px solid transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .note-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .note-item.active {
-            background: linear-gradient(135deg, rgba(0, 122, 255, 0.15), rgba(90, 200, 250, 0.05));
-            border-left-color: #007AFF;
-            border-color: rgba(0, 122, 255, 0.3);
-        }
-
-        .note-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 16px;
-            color: #ffffff;
-        }
-
-        .note-preview {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .note-date {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 500;
-        }
-
-        /* Main Editor Area */
-        .editor-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-            position: relative;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .sidebar.collapsed + .editor-area {
-            margin-left: -320px;
-        }
-
-        .editor-toolbar {
-            background: rgba(248, 249, 250, 0.8);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .back-btn, .sidebar-btn {
-            background: rgba(0, 122, 255, 0.1);
-            border: 1px solid rgba(0, 122, 255, 0.2);
-            color: #007AFF;
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .back-btn:hover, .sidebar-btn:hover {
-            background: rgba(0, 122, 255, 0.15);
-            border-color: rgba(0, 122, 255, 0.3);
-            transform: scale(1.05);
-        }
-
-        .title-input {
-            flex: 1;
-            border: none;
-            font-size: 24px;
-            font-weight: 700;
-            background: transparent;
-            outline: none;
-            color: #1d1d1f;
-            padding: 12px 0;
-            font-family: inherit;
-        }
-
-        .title-input::placeholder {
-            color: rgba(29, 29, 47, 0.5);
-        }
-
-        .tool-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 6px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .tool-btn {
-            background: transparent;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            min-width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1d1d1f;
-        }
-
-        .tool-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .tool-btn.active {
-            background: linear-gradient(135deg, #007AFF, #5AC8FA);
-            color: white;
-            box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
-        }
-
-        .color-picker {
-            display: flex;
-            gap: 8px;
-        }
-
-        .color-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 18px;
-            border: 3px solid rgba(255, 255, 255, 0.8);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .color-btn:hover {
-            transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 1);
-        }
-
-        .color-btn.active {
-            border-color: #007AFF;
-            transform: scale(1.15);
-            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
-        }
-
-        .size-slider {
-            width: 120px;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(0, 0, 0, 0.1);
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        .size-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #007AFF, #5AC8FA);
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
-        }
-
-        .size-display {
-            font-size: 13px;
-            color: #666;
-            min-width: 40px;
-            font-weight: 600;
-        }
-
-        /* Canvas Container */
-        .canvas-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background: #ffffff;
-        }
-
-        .drawing-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            cursor: crosshair;
-            background: #ffffff;
-            touch-action: none;
-        }
-
-        .text-editor {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            outline: none;
-            padding: 40px;
-            font-size: 18px;
-            line-height: 1.6;
-            color: #1d1d1f;
-            background: transparent;
-            resize: none;
-            font-family: inherit;
-        }
-
-        .text-editor::placeholder {
-            color: rgba(29, 29, 47, 0.4);
-        }
-
-        /* Empty State */
-        .empty-state {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: rgba(29, 29, 47, 0.6);
-            background: #ffffff;
-        }
-
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.4;
-        }
-
-        .empty-state h3 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #1d1d1f;
-        }
-
-        .empty-state p {
-            font-size: 16px;
-            color: rgba(29, 29, 47, 0.6);
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(20px);
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: linear-gradient(145deg, #ffffff, #f8f9fa);
-            border-radius: 20px;
-            padding: 32px;
-            width: 90%;
-            max-width: 420px;
-            color: #1d1d1f;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .modal-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: #1d1d1f;
-        }
-
-        .modal-input {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            font-size: 16px;
-            outline: none;
-            margin-bottom: 24px;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        .modal-input:focus {
-            border-color: #007AFF;
-            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-
-        .modal-btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        .modal-btn.primary {
-            background: linear-gradient(135deg, #007AFF, #5AC8FA);
-            color: white;
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
-        }
-
-        .modal-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
-        }
-
-        .modal-btn.secondary {
-            background: rgba(0, 0, 0, 0.05);
-            color: #1d1d1f;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-btn.secondary:hover {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                max-width: 350px;
-                position: absolute;
-                z-index: 200;
-            }
-            
-            .sidebar.collapsed {
-                transform: translateX(-100%);
-            }
-            
-            .sidebar-toggle {
-                right: -50px;
-                border-radius: 0 16px 16px 0;
-            }
-            
-            .editor-toolbar {
-                flex-wrap: wrap;
-                gap: 12px;
-                padding: 12px 16px;
-            }
-            
-            .tool-group {
-                flex-wrap: wrap;
-            }
-
-            .title-input {
-                font-size: 20px;
-            }
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .note-item, .subject-item {
-            animation: fadeIn 0.3s ease-out;
-        }
+            position: absolute; right: -44px; top: 20px; width: 44px; height: 44px;
+            background: rgba(28,28,30,0.8); border: 1px solid rgba(84,84,88,0.6);
+            border-radius: 0 12px 12px 0; color: #007AFF; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+            z-index:101;
+        }
+        .sidebar-header { padding: 24px 20px; border-bottom: 1px solid rgba(84,84,88,0.3); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02);}
+        .sidebar-title { font-size: 28px; font-weight: 700; background: linear-gradient(135deg,#007AFF,#5AC8FA); -webkit-background-clip: text;-webkit-text-fill-color: transparent;background-clip: text;}
+        .add-btn { background: linear-gradient(135deg, #007AFF, #5AC8FA); color: white; border: none; width: 36px; height: 36px; border-radius: 18px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,122,255,0.3);}
+        .add-btn:hover {transform: scale(1.1);}
+        .subjects-section { padding: 20px; border-bottom: 1px solid rgba(84,84,88,0.3);}
+        .section-title { font-size: 17px; font-weight: 600; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;}
+        .subject-item { padding: 12px 16px; margin: 4px 0; border-radius: 12px; cursor: pointer; transition: all 0.3s; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent;}
+        .subject-item.active { background: linear-gradient(135deg,rgba(0,122,255,0.2),rgba(90,200,250,0.1)); border-color:rgba(0,122,255,0.3); color:#5AC8FA;}
+        .notes-count { background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 12px; font-size: 12px;}
+        .notes-list { flex: 1; overflow-y: auto; padding: 20px;}
+        .note-item { padding: 16px; margin: 8px 0; background: rgba(255,255,255,0.05); border-radius: 16px; cursor: pointer; border-left: 4px solid transparent; border: 1px solid rgba(255,255,255,0.1);}
+        .note-item.active { background: linear-gradient(135deg,rgba(0,122,255,0.15),rgba(90,200,250,0.05)); border-left-color: #007AFF; border-color: rgba(0,122,255,0.3);}
+        .note-title { font-weight: 600; margin-bottom: 8px; font-size: 16px;}
+        .note-preview { font-size: 14px; color: rgba(255,255,255,0.7);}
+        .note-date { font-size: 12px; color: rgba(255,255,255,0.5);}
+        .editor-area { flex: 1; display: flex; flex-direction: column; background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%); position: relative;}
+        .editor-toolbar { background: rgba(248,249,250,0.8); border-bottom: 1px solid rgba(0,0,0,0.1); padding: 16px 20px; display: flex; align-items: center; gap:20px; flex-wrap: wrap;}
+        .back-btn { background: rgba(0,122,255,0.1); border: 1px solid rgba(0,122,255,0.2); color: #007AFF; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 18px; width: 44px; height: 44px;}
+        .title-input { flex: 1; border: none; font-size: 24px; font-weight: 700; background: transparent; color: #1d1d1f; padding: 12px 0;}
+        .tool-group {display:flex;gap:8px;align-items:center; background:rgba(255,255,255,0.7);padding:6px;border-radius:12px; border:1px solid rgba(0,0,0,0.1);}
+        .tool-btn {background:transparent; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600; min-width:44px;height:44px;}
+        .tool-btn.active { background: linear-gradient(135deg,#007AFF,#5AC8FA); color: white;}
+        .color-picker {display: flex; gap:8px;}
+        .color-btn { width:36px; height:36px; border-radius:18px; border:3px solid rgba(255,255,255,0.8); cursor:pointer;}
+        .color-btn.active {border-color:#007AFF; transform:scale(1.15);}
+        .size-slider { width:120px;}
+        .size-display {font-size:13px; color:#666; min-width:40px;}
+        .canvas-container { flex: 1; position: relative; overflow: hidden; background: #ffffff;}
+        .drawing-canvas { position:absolute; top:0; left:0; width:100%; height:100%; cursor:crosshair; background:#fff;}
+        .text-editor {position:absolute;top:0;left:0;width:100%;height:100%;border:none;outline:none;padding:40px; font-size:18px; line-height:1.6; color:#1d1d1f; background:transparent;}
+        .empty-state {flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(29,29,47,0.6);background:#fff;}
+        .empty-icon {font-size:64px;margin-bottom:20px;opacity:0.4;}
+        /* Flyout Styles */
+        .notes-flyout { position: fixed; top: 0; left: 320px; width: 320px; height: 100vh; background: linear-gradient(120deg, #f8fcff 85%, #eaf1fa 100%); color: #1d1d1f; box-shadow: 4px 0 32px rgba(0,0,0,0.13); z-index: 500; border-right: 1px solid rgba(0,0,0,0.07); transform: translateX(-350px); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column;}
+        .notes-flyout.open {transform: translateX(0);}
+        .flyout-header {display:flex;align-items:center;justify-content:space-between;font-size:20px;font-weight:600;padding:20px;border-bottom: 1px solid #ececec;background: rgba(255,255,255,0.93);position:sticky;top:0;z-index:6;}
+        .flyout-close {background:transparent;color:#007AFF;font-size:28px;border:none;border-radius:10px;width:38px;height:38px;cursor:pointer;}
+        .flyout-notes-list {overflow-y:auto;flex:1;padding:16px 0;}
+        .flyout-note-item {padding:15px 26px;margin:0 0 2px 0;background:rgba(0,0,0,0.02);border-bottom:1px solid #efefef;transition:background 0.15s;cursor:pointer;font-size:16px;color:#1d1d1f;}
+        .flyout-note-item:hover {background:#eaf2fb;}
+        /* END STYLES */
     </style>
 </head>
 <body>
     <div class="notes-app">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-            <!-- Sidebar Toggle -->
             <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
                 <span id="toggleIcon">‹</span>
             </button>
-
-            <!-- Header -->
             <div class="sidebar-header">
                 <div class="sidebar-title">Notes</div>
                 <button class="add-btn" onclick="createNewNote()" title="New Note">+</button>
             </div>
-
-            <!-- Subjects -->
             <div class="subjects-section">
                 <div class="section-title">
                     Subjects
                     <button class="add-btn" onclick="showAddSubjectModal()" title="Add Subject" style="width: 28px; height: 28px; font-size: 16px;">+</button>
                 </div>
-                <div id="subjectsList">
-                    <!-- Subjects loaded by JS -->
-                </div>
+                <div id="subjectsList"></div>
             </div>
-
-            <!-- Notes List -->
-            <div class="notes-list" id="notesList">
-                <!-- Notes loaded by JS -->
-            </div>
+            <div class="notes-list" id="notesList"></div>
         </div>
-
+        <!-- Flyout (Second Sidebar) -->
+        <div class="notes-flyout" id="notesFlyout">
+            <div class="flyout-header">
+                <span id="flyoutSubjectName"></span>
+                <button class="flyout-close" onclick="closeNotesFlyout()">×</button>
+            </div>
+            <div class="flyout-notes-list" id="flyoutNotesList"></div>
+        </div>
         <!-- Editor Area -->
         <div class="editor-area" id="editorArea">
-            <!-- Toolbar -->
             <div class="editor-toolbar">
                 <button class="back-btn" onclick="goHome()" title="Back to Home">←</button>
-                <button class="sidebar-btn" onclick="toggleSidebar()" title="Toggle Sidebar" style="display: none;" id="mobileSidebarBtn">☰</button>
                 <input type="text" class="title-input" id="titleInput" placeholder="Untitled Note">
-                
                 <div class="tool-group">
                     <button class="tool-btn" id="textModeBtn" onclick="setMode('text')" title="Text Mode">Text</button>
                     <button class="tool-btn active" id="drawModeBtn" onclick="setMode('draw')" title="Draw Mode">Draw</button>
                 </div>
-
                 <div class="tool-group" id="drawingTools">
                     <button class="tool-btn active" onclick="setTool('pen')" data-tool="pen" title="Pen">✏️</button>
                     <button class="tool-btn" onclick="setTool('highlighter')" data-tool="highlighter" title="Highlighter">ߖ️</button>
                     <button class="tool-btn" onclick="setTool('eraser')" data-tool="eraser" title="Eraser">ߧ</button>
                 </div>
-
                 <div class="color-picker" id="colorPicker">
-                    <div class="color-btn active" style="background: #000" onclick="setColor('#000')" data-color="#000" title="Black"></div>
-                    <div class="color-btn" style="background: #007AFF" onclick="setColor('#007AFF')" data-color="#007AFF" title="Blue"></div>
-                    <div class="color-btn" style="background: #FF3B30" onclick="setColor('#FF3B30')" data-color="#FF3B30" title="Red"></div>
-                    <div class="color-btn" style="background: #34C759" onclick="setColor('#34C759')" data-color="#34C759" title="Green"></div>
-                    <div class="color-btn" style="background: #FF9500" onclick="setColor('#FF9500')" data-color="#FF9500" title="Orange"></div>
-                    <div class="color-btn" style="background: #AF52DE" onclick="setColor('#AF52DE')" data-color="#AF52DE" title="Purple"></div>
+                    <div class="color-btn active" style="background: #000" onclick="setColor('#000')" data-color="#000"></div>
+                    <div class="color-btn" style="background: #007AFF" onclick="setColor('#007AFF')" data-color="#007AFF"></div>
+                    <div class="color-btn" style="background: #FF3B30" onclick="setColor('#FF3B30')" data-color="#FF3B30"></div>
+                    <div class="color-btn" style="background: #34C759" onclick="setColor('#34C759')" data-color="#34C759"></div>
+                    <div class="color-btn" style="background: #FF9500" onclick="setColor('#FF9500')" data-color="#FF9500"></div>
+                    <div class="color-btn" style="background: #AF52DE" onclick="setColor('#AF52DE')" data-color="#AF52DE"></div>
                 </div>
-
                 <div class="tool-group">
-                    <input type="range" class="size-slider" id="sizeSlider" min="1" max="20" value="3" onchange="setBrushSize(this.value)" title="Brush Size">
+                    <input type="range" class="size-slider" id="sizeSlider" min="1" max="20" value="3" onchange="setBrushSize(this.value)">
                     <span class="size-display" id="sizeDisplay">3px</span>
                 </div>
-
                 <div class="tool-group">
                     <button class="tool-btn" onclick="undoAction()" title="Undo">↶</button>
                     <button class="tool-btn" onclick="clearCanvas()" title="Clear Canvas">ߗ️</button>
                 </div>
             </div>
-
-            <!-- Canvas Container -->
             <div class="canvas-container" id="canvasContainer">
                 <canvas class="drawing-canvas" id="drawingCanvas"></canvas>
                 <textarea class="text-editor" id="textEditor" placeholder="Start writing your notes here..." style="display: none;"></textarea>
             </div>
-
-            <!-- Empty State -->
             <div class="empty-state" id="emptyState">
                 <div class="empty-icon">ߓ</div>
                 <h3>Select a note to start editing</h3>
@@ -677,7 +145,6 @@
             </div>
         </div>
     </div>
-
     <!-- Add Subject Modal -->
     <div class="modal" id="addSubjectModal">
         <div class="modal-content">
@@ -689,485 +156,430 @@
             </div>
         </div>
     </div>
-
     <script>
-        // Notes App - Complete iPad-like Experience with Collapsible Sidebar
-        class NotesApp {
-            constructor() {
-                this.subjects = [];
-                this.notes = [];
-                this.currentNote = null;
-                this.currentSubject = 'all';
-                this.currentMode = 'draw';
-                this.currentTool = 'pen';
-                this.currentColor = '#000';
-                this.brushSize = 3;
-                this.canvas = null;
-                this.ctx = null;
-                this.isDrawing = false;
-                this.undoStack = [];
-                this.sidebarCollapsed = false;
-                this.init();
-            }
+     class NotesApp {
+    constructor() {
+        this.subjects = [];
+        this.notes = [];
+        this.currentNote = null;
+        this.currentSubject = 'all';
+        this.currentMode = 'draw';
+        this.currentTool = 'pen';
+        this.currentColor = '#000';
+        this.brushSize = 3;
+        this.canvas = null;
+        this.ctx = null;
+        this.isDrawing = false;
+        this.lastX = 0;
+        this.lastY = 0;
+        this.undoStack = [];
+        this.sidebarCollapsed = false;
+        this.init();
+    }
 
-            init() {
-                this.loadData();
-                this.setupCanvas();
-                this.setupEventListeners();
-                this.render();
-                this.checkMobile();
-                console.log('✅ Notes App Ready');
-            }
+    init() {
+        this.loadData();
+        this.setupCanvas();
+        this.setupEventListeners();
+        this.render();
+        this.checkMobile();
+        console.log('✅ Notes App Ready');
+    }
 
-            checkMobile() {
-                const isMobile = window.innerWidth <= 768;
-                const mobileSidebarBtn = document.getElementById('mobileSidebarBtn');
-                
-                if (isMobile) {
-                    mobileSidebarBtn.style.display = 'flex';
-                    this.sidebarCollapsed = true;
-                    this.updateSidebarState();
-                }
-                
-                window.addEventListener('resize', () => {
-                    const isMobileNow = window.innerWidth <= 768;
-                    mobileSidebarBtn.style.display = isMobileNow ? 'flex' : 'none';
-                });
-            }
+    checkMobile() {
+        const isMobile = window.innerWidth <= 768;
+        const sidebar = document.getElementById('sidebar');
+        if (isMobile) {
+            this.sidebarCollapsed = true;
+            sidebar.classList.add('collapsed');
+            document.getElementById('toggleIcon').textContent = '›';
+        }
+        window.addEventListener('resize', () => {
+            // On resize, trigger canvas resize
+            this.resizeCanvas();
+        });
+    }
 
-            loadData() {
-                this.subjects = JSON.parse(localStorage.getItem('notes_subjects') || '["Math", "Physics", "Chemistry", "History", "English"]');
-                this.notes = JSON.parse(localStorage.getItem('notes_data') || '[]');
-                
-                if (this.notes.length === 0) {
-                    this.notes.push({
-                        id: Date.now(),
-                        title: 'Welcome to Smart Notes',
-                        content: 'This is your professional note-taking app. Start writing or drawing!',
-                        subject: 'Math',
-                        created: new Date().toISOString(),
-                        updated: new Date().toISOString(),
-                        drawing: null
-                    });
-                    this.saveData();
-                }
-            }
+    loadData() {
+        this.subjects = JSON.parse(localStorage.getItem('notes_subjects') || '["Math", "Physics", "Chemistry", "History", "English"]');
+        this.notes = JSON.parse(localStorage.getItem('notes_data') || '[]');
+        if (this.notes.length === 0) {
+            this.notes.push({
+                id: Date.now(),
+                title: 'Welcome to Smart Notes',
+                content: 'This is your professional note-taking app. Start writing or drawing!',
+                subject: 'Math',
+                created: new Date().toISOString(),
+                updated: new Date().toISOString(),
+                drawing: null
+            });
+            this.saveData();
+        }
+    }
 
-            saveData() {
-                localStorage.setItem('notes_subjects', JSON.stringify(this.subjects));
-                localStorage.setItem('notes_data', JSON.stringify(this.notes));
-                console.log('ߒ Data saved');
-            }
+    saveData() {
+        localStorage.setItem('notes_subjects', JSON.stringify(this.subjects));
+        localStorage.setItem('notes_data', JSON.stringify(this.notes));
+    }
 
-            setupCanvas() {
-                this.canvas = document.getElementById('drawingCanvas');
-                this.ctx = this.canvas.getContext('2d');
-                
-                this.resizeCanvas();
-                window.addEventListener('resize', () => this.resizeCanvas());
-                
-                // Mouse events
-                this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
-                this.canvas.addEventListener('mousemove', (e) => this.draw(e));
-                this.canvas.addEventListener('mouseup', () => this.stopDrawing());
-                this.canvas.addEventListener('mouseleave', () => this.stopDrawing());
-                
-                // Touch events (mobile/stylus)
-                this.canvas.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    this.startDrawing(touch);
-                });
-                
-                this.canvas.addEventListener('touchmove', (e) => {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    this.draw(touch);
-                });
-                
-                this.canvas.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    this.stopDrawing();
-                });
-                
-                this.updateDrawingSettings();
-                console.log('ߎ Canvas ready');
-            }
+    setupCanvas() {
+        this.canvas = document.getElementById('drawingCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.resizeCanvas();
 
-            resizeCanvas() {
-                const container = document.getElementById('canvasContainer');
-                const rect = container.getBoundingClientRect();
-                
-                this.canvas.width = rect.width;
-                this.canvas.height = rect.height;
-                this.canvas.style.width = rect.width + 'px';
-                this.canvas.style.height = rect.height + 'px';
-                
-                this.updateDrawingSettings();
-                console.log('ߓ Canvas resized:', rect.width, 'x', rect.height);
-            }
+        // Mouse support
+        this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
+        this.canvas.addEventListener('mousemove', (e) => this.draw(e));
+        this.canvas.addEventListener('mouseup', () => this.stopDrawing());
+        this.canvas.addEventListener('mouseleave', () => this.stopDrawing());
+        // Touch/stylus
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            this.startDrawing(touch);
+        });
+        this.canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            this.draw(touch);
+        });
+        this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.stopDrawing();
+        });
 
-            updateDrawingSettings() {
-                if (!this.ctx) return;
-                
-                this.ctx.lineCap = 'round';
-                this.ctx.lineJoin = 'round';
-                this.ctx.strokeStyle = this.currentColor;
-                this.ctx.lineWidth = this.brushSize;
-                
-                if (this.currentTool === 'highlighter') {
-                    this.ctx.globalCompositeOperation = 'multiply';
-                    this.ctx.globalAlpha = 0.3;
-                    this.ctx.lineWidth = this.brushSize * 4;
-                } else if (this.currentTool === 'eraser') {
-                    this.ctx.globalCompositeOperation = 'destination-out';
-                    this.ctx.globalAlpha = 1;
-                    this.ctx.lineWidth = this.brushSize * 3;
-                } else {
-                    this.ctx.globalCompositeOperation = 'source-over';
-                    this.ctx.globalAlpha = 1;
-                }
-            }
+        this.updateDrawingSettings();
+    }
 
-            startDrawing(e) {
-                this.isDrawing = true;
-                this.undoStack.push(this.canvas.toDataURL());
-                
-                const rect = this.canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                this.ctx.beginPath();
-                this.ctx.moveTo(x, y);
-                console.log('✏️ Started drawing');
-            }
+    resizeCanvas() {
+        const container = document.getElementById('canvasContainer');
+        const rect = container.getBoundingClientRect();
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+        this.canvas.style.width = rect.width + 'px';
+        this.canvas.style.height = rect.height + 'px';
+        this.updateDrawingSettings();
 
-            draw(e) {
-                if (!this.isDrawing) return;
-                
-                const rect = this.canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                this.ctx.lineTo(x, y);
-                this.ctx.stroke();
-            }
+        // If a drawing exists in opened note, render it again after resize
+        if (this.currentNote && this.currentNote.drawing) {
+            const img = new Image();
+            img.onload = () => this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+            img.src = this.currentNote.drawing;
+        }
+    }
 
-            stopDrawing() {
-                if (!this.isDrawing) return;
-                this.isDrawing = false;
-                this.saveCurrentNote();
-                console.log('✅ Stopped drawing');
-            }
+    updateDrawingSettings() {
+        if (!this.ctx) return;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.ctx.strokeStyle = this.currentColor;
+        this.ctx.lineWidth = this.brushSize;
+        if (this.currentTool === 'highlighter') {
+            this.ctx.globalCompositeOperation = 'multiply';
+            this.ctx.globalAlpha = 0.3;
+            this.ctx.lineWidth = this.brushSize * 4;
+        } else if (this.currentTool === 'eraser') {
+            this.ctx.globalCompositeOperation = 'destination-out';
+            this.ctx.globalAlpha = 1;
+            this.ctx.lineWidth = this.brushSize * 3;
+        } else {
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.globalAlpha = 1;
+        }
+    }
 
-            setupEventListeners() {
-                const titleInput = document.getElementById('titleInput');
-                const textEditor = document.getElementById('textEditor');
-                
-                titleInput.addEventListener('input', () => this.saveCurrentNote());
-                textEditor.addEventListener('input', () => this.saveCurrentNote());
-            }
+    startDrawing(e) {
+        this.isDrawing = true;
+        this.undoStack.push(this.canvas.toDataURL());
+        const rect = this.canvas.getBoundingClientRect();
+        this.lastX = e.clientX - rect.left;
+        this.lastY = e.clientY - rect.top;
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.lastX, this.lastY);
+    }
 
-            toggleSidebar() {
-                this.sidebarCollapsed = !this.sidebarCollapsed;
-                this.updateSidebarState();
-            }
+    draw(e) {
+        if (!this.isDrawing) return;
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        this.ctx.lineTo(x, y);
+        this.ctx.stroke();
+        this.lastX = x;
+        this.lastY = y;
+    }
 
-            updateSidebarState() {
-                const sidebar = document.getElementById('sidebar');
-                const toggleIcon = document.getElementById('toggleIcon');
-                
-                if (this.sidebarCollapsed) {
-                    sidebar.classList.add('collapsed');
-                    toggleIcon.textContent = '›';
-                } else {
-                    sidebar.classList.remove('collapsed');
-                    toggleIcon.textContent = '‹';
-                }
-                
-                // Trigger canvas resize after sidebar animation
-                setTimeout(() => {
-                    this.resizeCanvas();
-                }, 400);
-            }
+    stopDrawing() {
+        if (!this.isDrawing) return;
+        this.isDrawing = false;
+        this.saveCurrentNote();
+        this.ctx.beginPath();
+    }
 
-            render() {
-                this.renderSubjects();
-                this.renderNotes();
-                this.showEmptyState();
-            }
+    setupEventListeners() {
+        const titleInput = document.getElementById('titleInput');
+        const textEditor = document.getElementById('textEditor');
+        titleInput.addEventListener('input', () => this.saveCurrentNote());
+        textEditor.addEventListener('input', () => this.saveCurrentNote());
+        document.getElementById('sizeSlider').addEventListener('input', (e) =>
+            setBrushSize(e.target.value)
+        );
+    }
 
-            renderSubjects() {
-                const container = document.getElementById('subjectsList');
-                let html = `<div class="subject-item ${this.currentSubject === 'all' ? 'active' : ''}" onclick="app.selectSubject('all')">
-                    <span>All Notes</span>
-                    <span class="notes-count">${this.notes.length}</span>
+    // Sidebar toggle and flyout
+    toggleSidebar() {
+        this.sidebarCollapsed = !this.sidebarCollapsed;
+        const sidebar = document.getElementById('sidebar');
+        const toggleIcon = document.getElementById('toggleIcon');
+        if (this.sidebarCollapsed) {
+            sidebar.classList.add('collapsed');
+            toggleIcon.textContent = '›';
+        } else {
+            sidebar.classList.remove('collapsed');
+            toggleIcon.textContent = '‹';
+        }
+        setTimeout(() => this.resizeCanvas(), 450);
+    }
+
+    // --- Rendering ---
+    render() {
+        this.renderSubjects();
+        this.renderNotes();
+        this.showEmptyState();
+    }
+
+    renderSubjects() {
+        const container = document.getElementById('subjectsList');
+        let html = `<div class="subject-item ${this.currentSubject === 'all' ? 'active' : ''}" onclick="app.selectAllNotes()">
+            <span>All Notes</span>
+            <span class="notes-count">${this.notes.length}</span>
+        </div>`;
+        this.subjects.forEach(subject => {
+            const count = this.notes.filter(n => n.subject === subject).length;
+            html += `<div class="subject-item" onclick="openNotesFlyout('${subject.replace(/'/g,"\\'")}')">
+                    <span>${subject}</span>
+                    <span class="notes-count">${count}</span>
                 </div>`;
-                
-                this.subjects.forEach(subject => {
-                    const count = this.notes.filter(n => n.subject === subject).length;
-                    html += `<div class="subject-item ${this.currentSubject === subject ? 'active' : ''}" onclick="app.selectSubject('${subject}')">
-                        <span>${subject}</span>
-                        <span class="notes-count">${count}</span>
-                    </div>`;
-                });
-                
-                container.innerHTML = html;
-            }
+        });
+        container.innerHTML = html;
+    }
 
-            renderNotes() {
-                const container = document.getElementById('notesList');
-                let filtered = this.currentSubject === 'all' ? this.notes : this.notes.filter(n => n.subject === this.currentSubject);
-                filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated));
-                
-                let html = '';
-                filtered.forEach(note => {
-                    const preview = note.content.substring(0, 100);
-                    const date = new Date(note.updated).toLocaleDateString();
-                    html += `<div class="note-item ${this.currentNote?.id === note.id ? 'active' : ''}" onclick="app.selectNote(${note.id})">
-                        <div class="note-title">${note.title || 'Untitled'}</div>
-                        <div class="note-preview">${preview}${preview.length >= 100 ? '...' : ''}</div>
-                        <div class="note-date">${date}</div>
-                    </div>`;
-                });
-                
-                container.innerHTML = html || '<div style="text-align:center;padding:20px;color:#666;">No notes</div>';
-            }
+    renderNotes() {
+        const container = document.getElementById('notesList');
+        if (!container) return;
+        let filtered = this.currentSubject === 'all' ? this.notes : this.notes.filter(n => n.subject === this.currentSubject);
+        filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+        let html = '';
+        filtered.forEach(note => {
+            const preview = note.content.substring(0, 100);
+            const date = new Date(note.updated).toLocaleDateString();
+            html += `<div class="note-item${this.currentNote?.id === note.id ? ' active' : ''}" onclick="app.selectNote(${note.id})">
+                <div class="note-title">${note.title || 'Untitled'}</div>
+                <div class="note-preview">${preview}${preview.length >= 100 ? '...' : ''}</div>
+                <div class="note-date">${date}</div>
+            </div>`;
+        });
+        container.innerHTML = html || '<div style="text-align:center;padding:20px;color:#666;">No notes</div>';
+    }
 
-            selectSubject(subject) {
-                this.currentSubject = subject;
-                this.render();
-                console.log('Selected subject:', subject);
-            }
+    selectAllNotes() {
+        this.currentSubject = 'all';
+        document.getElementById("notesFlyout").classList.remove("open");
+        this.render();
+    }
 
-            selectNote(id) {
-                this.currentNote = this.notes.find(n => n.id === id);
-                if (this.currentNote) {
-                    this.loadNoteIntoEditor();
-                    this.showEditor();
-                    this.render();
-                    console.log('Opened note:', this.currentNote.title);
-                }
-            }
+    selectNote(id) {
+        this.currentNote = this.notes.find(n => n.id === id);
+        if (this.currentNote) {
+            this.loadNoteIntoEditor();
+            this.showEditor();
+            this.render();
+        }
+    }
 
-            loadNoteIntoEditor() {
-                if (!this.currentNote) return;
-                
-                document.getElementById('titleInput').value = this.currentNote.title;
-                document.getElementById('textEditor').value = this.currentNote.content;
-                
-                if (this.currentNote.drawing) {
-                    const img = new Image();
-                    img.onload = () => {
-                        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                        this.ctx.drawImage(img, 0, 0);
-                    };
-                    img.src = this.currentNote.drawing;
-                } else {
-                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                }
-            }
-
-            saveCurrentNote() {
-                if (!this.currentNote) return;
-                
-                this.currentNote.title = document.getElementById('titleInput').value;
-                this.currentNote.content = document.getElementById('textEditor').value;
-                this.currentNote.drawing = this.canvas.toDataURL();
-                this.currentNote.updated = new Date().toISOString();
-                
-                const index = this.notes.findIndex(n => n.id === this.currentNote.id);
-                if (index !== -1) {
-                    this.notes[index] = this.currentNote;
-                }
-                
-                this.saveData();
-                this.renderNotes();
-            }
-
-            createNewNote() {
-                const note = {
-                    id: Date.now(),
-                    title: 'New Note',
-                    content: '',
-                    subject: this.currentSubject === 'all' ? this.subjects[0] : this.currentSubject,
-                    created: new Date().toISOString(),
-                    updated: new Date().toISOString(),
-                    drawing: null
-                };
-                
-                this.notes.unshift(note);
-                this.currentNote = note;
-                this.saveData();
-                this.loadNoteIntoEditor();
-                this.showEditor();
-                this.render();
-                
-                setTimeout(() => {
-                    document.getElementById('titleInput').focus();
-                    document.getElementById('titleInput').select();
-                }, 100);
-                
-                console.log('Created new note');
-            }
-
-            showEditor() {
-                document.getElementById('emptyState').style.display = 'none';
-                document.getElementById('canvasContainer').style.display = 'block';
-            }
-
-            showEmptyState() {
-                if (!this.currentNote) {
-                    document.getElementById('emptyState').style.display = 'flex';
-                    document.getElementById('canvasContainer').style.display = 'none';
-                }
-            }
-
-            addSubject(name) {
-                if (name && !this.subjects.includes(name)) {
-                    this.subjects.push(name);
-                    this.saveData();
-                    this.render();
-                    console.log('Added subject:', name);
-                    return true;
-                }
-                return false;
-            }
-
-            setMode(mode) {
-                this.currentMode = mode;
-                document.getElementById('textModeBtn').classList.toggle('active', mode === 'text');
-                document.getElementById('drawModeBtn').classList.toggle('active', mode === 'draw');
-                document.getElementById('textEditor').style.display = mode === 'text' ? 'block' : 'none';
-                console.log('Mode:', mode);
-            }
-
-            setTool(tool) {
-                this.currentTool = tool;
-                this.updateDrawingSettings();
-                document.querySelectorAll('[data-tool]').forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
-                console.log('Tool:', tool);
-            }
-
-            setColor(color) {
-                this.currentColor = color;
-                this.updateDrawingSettings();
-                document.querySelectorAll('[data-color]').forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`[data-color="${color}"]`).classList.add('active');
-                console.log('Color:', color);
-            }
-
-            setBrushSize(size) {
-                this.brushSize = parseInt(size);
-                this.updateDrawingSettings();
-                document.getElementById('sizeDisplay').textContent = size + 'px';
-            }
-
-            undo() {
-                if (this.undoStack.length === 0) return;
-                const lastState = this.undoStack.pop();
-                const img = new Image();
-                img.onload = () => {
-                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                    this.ctx.drawImage(img, 0, 0);
-                };
-                img.src = lastState;
-            }
-
-            clear() {
-                this.undoStack.push(this.canvas.toDataURL());
+    loadNoteIntoEditor() {
+        if (!this.currentNote) return;
+        document.getElementById('titleInput').value = this.currentNote.title || '';
+        document.getElementById('textEditor').value = this.currentNote.content || '';
+        if (this.currentNote.drawing) {
+            const img = new Image();
+            img.onload = () => {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.saveCurrentNote();
-                console.log('Canvas cleared');
+                this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
             }
+            img.src = this.currentNote.drawing;
+        } else {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
+    }
 
-        // Global app instance
-        let app;
+    saveCurrentNote() {
+        if (!this.currentNote) return;
+        this.currentNote.title = document.getElementById('titleInput').value;
+        this.currentNote.content = document.getElementById('textEditor').value;
+        this.currentNote.drawing = this.canvas.toDataURL();
+        this.currentNote.updated = new Date().toISOString();
+        const index = this.notes.findIndex(n => n.id === this.currentNote.id);
+        if (index !== -1) this.notes[index] = this.currentNote;
+        this.saveData();
+        this.renderNotes();
+    }
 
-        // Global functions
-        function goHome() {
-            window.location.href = '../index.html';
+    createNewNote() {
+        const note = {
+            id: Date.now(),
+            title: 'New Note',
+            content: '',
+            subject: this.currentSubject === 'all' ? this.subjects[0] : this.currentSubject,
+            created: new Date().toISOString(),
+            updated: new Date().toISOString(),
+            drawing: null
+        };
+        this.notes.unshift(note);
+        this.currentNote = note;
+        this.saveData();
+        this.loadNoteIntoEditor();
+        this.showEditor();
+        this.render();
+        setTimeout(() => {
+            document.getElementById('titleInput').focus();
+            document.getElementById('titleInput').select();
+        }, 100);
+    }
+
+    showEditor() {
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('canvasContainer').style.display = 'block';
+    }
+
+    showEmptyState() {
+        if (!this.currentNote) {
+            document.getElementById('emptyState').style.display = 'flex';
+            document.getElementById('canvasContainer').style.display = 'none';
         }
+    }
 
-        function toggleSidebar() {
-            app.toggleSidebar();
+    addSubject(name) {
+        if (name && !this.subjects.includes(name)) {
+            this.subjects.push(name);
+            this.saveData();
+            this.render();
+            return true;
         }
+        return false;
+    }
 
-        function createNewNote() {
-            app.createNewNote();
-        }
+    setMode(mode) {
+        this.currentMode = mode;
+        document.getElementById('textModeBtn').classList.toggle('active', mode === 'text');
+        document.getElementById('drawModeBtn').classList.toggle('active', mode === 'draw');
+        document.getElementById('textEditor').style.display = mode === 'text' ? 'block' : 'none';
+    }
 
-        function showAddSubjectModal() {
-            document.getElementById('addSubjectModal').classList.add('show');
-            document.getElementById('subjectInput').focus();
-        }
+    setTool(tool) {
+        this.currentTool = tool;
+        this.updateDrawingSettings();
+        document.querySelectorAll('[data-tool]').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+    }
 
-        function hideModal() {
-            document.getElementById('addSubjectModal').classList.remove('show');
-        }
+    setColor(color) {
+        this.currentColor = color;
+        this.updateDrawingSettings();
+        document.querySelectorAll('[data-color]').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[data-color="${color}"]`).classList.add('active');
+    }
 
-        function addSubject() {
-            const input = document.getElementById('subjectInput');
-            const name = input.value.trim();
-            
-            if (app.addSubject(name)) {
-                hideModal();
-                input.value = '';
-                alert('Subject added successfully!');
-            } else {
-                alert('Please enter a valid subject name!');
-            }
-        }
+    setBrushSize(size) {
+        this.brushSize = parseInt(size);
+        this.updateDrawingSettings();
+        document.getElementById('sizeDisplay').textContent = size + 'px';
+    }
 
-        function setMode(mode) {
-            app.setMode(mode);
-        }
+    undo() {
+        if (this.undoStack.length === 0) return;
+        const lastState = this.undoStack.pop();
+        const img = new Image();
+        img.onload = () => {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+        };
+        img.src = lastState;
+    }
 
-        function setTool(tool) {
-            app.setTool(tool);
-        }
+    clear() {
+        this.undoStack.push(this.canvas.toDataURL());
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.saveCurrentNote();
+    }
+}
 
-        function setColor(color) {
-            app.setColor(color);
-        }
+// --- Global helpers ---
+function goHome() { window.location.href = '../index.html'; }
+function toggleSidebar() { app.toggleSidebar(); }
+function createNewNote() { app.createNewNote(); }
+function showAddSubjectModal() {
+    document.getElementById('addSubjectModal').classList.add('show');
+    document.getElementById('subjectInput').focus();
+}
+function hideModal() { document.getElementById('addSubjectModal').classList.remove('show'); }
+function addSubject() {
+    const input = document.getElementById('subjectInput');
+    const name = input.value.trim();
+    if (app.addSubject(name)) {
+        hideModal();
+        input.value = '';
+        alert('Subject added successfully!');
+    } else {
+        alert('Please enter a valid subject name!');
+    }
+}
+function setMode(mode) { app.setMode(mode); }
+function setTool(tool) { app.setTool(tool); }
+function setColor(color) { app.setColor(color); }
+function setBrushSize(size) { app.setBrushSize(size); }
+function undoAction() { app.undo(); }
+function clearCanvas() { if (confirm('Clear the entire canvas?')) app.clear(); }
 
-        function setBrushSize(size) {
-            app.setBrushSize(size);
-        }
-
-        function undoAction() {
-            app.undo();
-        }
-
-        function clearCanvas() {
-            if (confirm('Clear the entire canvas?')) {
-                app.clear();
-            }
-        }
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', () => {
-            app = new NotesApp();
-            console.log('ߚ Professional Notes App Started');
+// --- Flyout logic ---
+function openNotesFlyout(subject) {
+    let filtered = app.notes.filter(n => n.subject === subject);
+    let html = '';
+    if (filtered.length === 0) {
+        html = `<div style="color:#888;text-align:center;padding:30px 0;">No notes in "${subject}"</div>`;
+    } else {
+        filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+        filtered.forEach(note => {
+            html += `<div class="flyout-note-item" onclick="selectNoteFromFlyout(${note.id})">
+              <strong>${note.title || 'Untitled'}</strong>
+              <div style="font-weight:400;font-size:13px;margin-top:2px;">${note.content.substring(0,70)}${note.content.length>70?'...':''}</div>
+            </div>`;
         });
+    }
+    document.getElementById('flyoutSubjectName').textContent = subject;
+    document.getElementById('flyoutNotesList').innerHTML = html;
+    document.getElementById('notesFlyout').classList.add('open');
+}
+function closeNotesFlyout() {
+    document.getElementById('notesFlyout').classList.remove('open');
+}
+function selectNoteFromFlyout(id) {
+    app.selectNote(id);
+    closeNotesFlyout();
+}
 
-        // Modal handling
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                hideModal();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.target.id === 'subjectInput' && e.key === 'Enter') {
-                addSubject();
-            }
-            if (e.key === 'Escape') {
-                hideModal();
-            }
-        });
+// --- Startup ---
+let app;
+document.addEventListener('DOMContentLoaded', () => {
+    app = new NotesApp();
+});
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) hideModal();
+});
+document.addEventListener('keydown', (e) => {
+    if (e.target.id === 'subjectInput' && e.key === 'Enter') addSubject();
+    if (e.key === 'Escape') hideModal();
+});
     </script>
 </body>
 </html>
