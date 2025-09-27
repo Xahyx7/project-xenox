@@ -1,5 +1,5 @@
 // Smart Book Tablet - Notes App Complete JavaScript
-// Professional Apple-style Notes with Flyout Sidebar
+// Professional Apple-style Notes with Perfect Matching Flyout Sidebar
 
 class NotesApp {
     constructor() {
@@ -68,6 +68,15 @@ class NotesApp {
                 title: 'How to Use',
                 content: '• Click subjects to see notes in flyout panel\n• Switch between Text and Draw modes\n• Use different drawing tools and colors\n• Everything saves automatically!',
                 subject: 'Physics',
+                created: new Date().toISOString(),
+                updated: new Date().toISOString(),
+                drawing: null
+            },
+            {
+                id: Date.now() + 2,
+                title: 'Drawing Features',
+                content: 'Try the drawing mode with:\n• Pen tool for normal drawing\n• Highlighter for semi-transparent marks\n• Eraser to remove content\n• Different colors and brush sizes',
+                subject: 'Chemistry',
                 created: new Date().toISOString(),
                 updated: new Date().toISOString(),
                 drawing: null
@@ -268,8 +277,8 @@ class NotesApp {
         if (!container) return;
 
         let html = `
-            <div class="subject-item ${this.currentSubject === 'all' ? 'active' : ''}" onclick="app.selectAllNotes()">
-                <span>All Notes</span>
+            <div class="subject-item all-notes ${this.currentSubject === 'all' ? 'active' : ''}" onclick="app.selectAllNotes()">
+                <span class="subject-name">All Notes</span>
                 <span class="notes-count">${this.notes.length}</span>
             </div>
         `;
@@ -278,14 +287,14 @@ class NotesApp {
             const count = this.notes.filter(n => n.subject === subject).length;
             html += `
                 <div class="subject-item" onclick="openNotesFlyout('${subject.replace(/'/g, "\\'")}')">
-                    <span>${subject}</span>
+                    <span class="subject-name">${subject}</span>
                     <span class="notes-count">${count}</span>
                 </div>
             `;
         });
 
         container.innerHTML = html;
-        console.log('ߓ Subjects rendered');
+        console.log('ߓ Subjects rendered with flyout indicators');
     }
 
     renderNotes() {
@@ -581,7 +590,7 @@ function clearCanvas() {
     }
 }
 
-// Flyout Functions
+// Flyout Functions - Perfect Design Match
 function openNotesFlyout(subject) {
     const flyout = document.getElementById('notesFlyout');
     const subjectNameEl = document.getElementById('flyoutSubjectName');
@@ -593,29 +602,29 @@ function openNotesFlyout(subject) {
     let filtered = app.notes.filter(n => n.subject === subject);
     
     // Update flyout title
-    subjectNameEl.textContent = subject;
+    subjectNameEl.textContent = subject + ' Notes';
     
     // Generate notes HTML
     let html = '';
     if (filtered.length === 0) {
         html = `
-            <div style="text-align: center; padding: 40px 20px; color: #888;">
-                <div style="font-size: 2rem; margin-bottom: 16px;">ߓ</div>
-                <p>No notes in "${subject}"</p>
-                <button onclick="createNewNoteInSubject('${subject}')" style="margin-top: 16px; padding: 8px 16px; background: #007AFF; color: white; border: none; border-radius: 8px; cursor: pointer;">Create First Note</button>
+            <div class="flyout-empty-state">
+                <div class="empty-icon">ߓ</div>
+                <p>No notes in "${subject}" yet</p>
+                <button onclick="createNewNoteInSubject('${subject}')">Create First Note</button>
             </div>
         `;
     } else {
         filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated));
         filtered.forEach(note => {
-            const preview = note.content.substring(0, 70);
+            const preview = note.content.substring(0, 80);
             const date = new Date(note.updated).toLocaleDateString();
             
             html += `
                 <div class="flyout-note-item" onclick="selectNoteFromFlyout(${note.id})">
                     <strong>${note.title || 'Untitled'}</strong>
-                    <div>${preview}${preview.length >= 70 ? '...' : ''}</div>
-                    <div style="font-size: 11px; color: #999; margin-top: 4px;">${date}</div>
+                    <div>${preview}${preview.length >= 80 ? '...' : ''}</div>
+                    <div class="note-date">${date}</div>
                 </div>
             `;
         });
@@ -641,10 +650,7 @@ function selectNoteFromFlyout(id) {
 }
 
 function createNewNoteInSubject(subject) {
-    // Temporarily set current subject and create note
-    const originalSubject = app.currentSubject;
-    app.currentSubject = subject;
-    
+    // Create note in specific subject
     const newNote = {
         id: Date.now() + Math.random(),
         title: 'New Note',
@@ -660,9 +666,6 @@ function createNewNoteInSubject(subject) {
     app.saveData();
     app.loadNoteIntoEditor();
     app.showEditor();
-    
-    // Restore original subject and re-render
-    app.currentSubject = originalSubject;
     app.render();
     
     closeNotesFlyout();
