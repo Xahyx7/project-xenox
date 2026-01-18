@@ -123,6 +123,9 @@ function openApp(appName) {
             case 'notes':
                 window.location.href = 'apps/notes.html';
                 break;
+            case 'edugo':                    // ✅ FIXED - EduGo added
+                window.location.href = 'apps/edugo.html';
+                break;
             case 'bookmart':
                 window.location.href = 'apps/bookmart.html';
                 break;
