@@ -5,64 +5,61 @@
   <title>EduGO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../css/common.css">
-  <link rel="stylesheet" href="edugo.css">
+  <link rel="stylesheet" href="../css/edugo.css">
 </head>
 <body>
 
-<div class="edugo-app">
+<div class="edugo">
 
-  <!-- Header -->
+  <!-- HEADER -->
   <header class="edugo-header">
     <h1>EduGO</h1>
-    <p>Personal Study Dashboard</p>
+    <span id="todayLabel"></span>
   </header>
 
-  <!-- Navigation -->
-  <nav class="edugo-tabs">
-    <button data-tab="dashboard" class="active">Dashboard</button>
-    <button data-tab="stopwatch">Stopwatch</button>
-    <button data-tab="goals">Daily Goals</button>
-  </nav>
+  <!-- STOPWATCH WIDGET -->
+  <section class="widget stopwatch-widget">
+    <div class="widget-title">Focus Timer</div>
+    <div class="timer" id="timer">00:00</div>
 
-  <!-- Dashboard -->
-  <section class="tab dashboard active">
-    <div class="period-switch">
-      <button data-period="daily" class="active">Today</button>
-      <button data-period="weekly">Week</button>
-      <button data-period="monthly">Month</button>
-      <button data-period="overall">Overall</button>
-    </div>
-
-    <div class="stat-card">
-      <h3>Study Time</h3>
-      <div class="stat-value" id="studyTime">0 min</div>
-      <small id="periodLabel">Today</small>
-    </div>
-  </section>
-
-  <!-- Stopwatch -->
-  <section class="tab stopwatch">
-    <div class="timer-display" id="timerDisplay">00:00</div>
     <div class="timer-controls">
-      <button id="startBtn">Start</button>
-      <button id="resetBtn">Reset</button>
-      <button id="fullscreenBtn">Full Screen</button>
+      <button id="startBtn">▶</button>
+      <button id="pauseBtn">⏸</button>
+      <button id="fullscreenBtn">⛶</button>
     </div>
   </section>
 
-  <!-- Goals -->
-  <section class="tab goals">
-    <input id="goalInput" placeholder="Add today's goal…" />
-    <ul id="goalList"></ul>
+  <!-- GOALS WIDGET -->
+  <section class="widget goals-widget">
+    <div class="widget-title">Today’s Goals</div>
+
+    <div id="goals"></div>
+
+    <div class="add-goal">
+      <input id="goalName" placeholder="Goal name">
+      <input id="goalTime" type="number" placeholder="min">
+      <button id="addGoal">Add</button>
+    </div>
+  </section>
+
+  <!-- STATS WIDGET -->
+  <section class="widget stats-widget">
+    <div class="widget-title">Progress</div>
+    <div class="stats">
+      <div><span id="dailyTime">0</span> min<br>Today</div>
+      <div><span id="weeklyTime">0</span> min<br>Week</div>
+      <div><span id="overallTime">0</span> hr<br>Total</div>
+    </div>
   </section>
 
 </div>
 
-<div class="fullscreen-timer hidden" id="fullscreenTimer">
-  <div id="fsTime">00:00</div>
-  <button id="exitFullscreen">Exit</button>
+<!-- FULLSCREEN TIMER -->
+<div class="fullscreen hidden" id="fullscreen">
+  <div id="fsTimer">00:00</div>
+  <button id="exitFs">Exit</button>
 </div>
 
-<script src="edugo.js"></script>
+<script src="../js/edugo.js"></script>
 </body>
 </html>
