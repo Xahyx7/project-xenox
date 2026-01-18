@@ -1,7 +1,7 @@
 {
     "name": "Smart Book Tablet",
     "short_name": "Smart Book",
-    "description": "Complete digital learning platform with notes, books, and AI assistance",
+    "description": "Complete digital learning platform with notes, books, AI assistance, and focus tools",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#1B1B1D",
@@ -31,6 +31,18 @@
         }
     ],
     "shortcuts": [
+        {
+            "name": "EduGo",
+            "short_name": "EduGo",
+            "description": "Focus, goals, and study persona",
+            "url": "/edugo/edugo.html",
+            "icons": [
+                {
+                    "src": "assets/images/notes.jpg",
+                    "sizes": "192x192"
+                }
+            ]
+        },
         {
             "name": "Notes",
             "short_name": "Notes",
