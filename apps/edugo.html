@@ -1,89 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduGo - Study Timer</title>
-    <link rel="stylesheet" href="../css/edugo.css">
-    <meta name="theme-color" content="#000000">
+  <meta charset="UTF-8" />
+  <title>EduGO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="edugo.css">
 </head>
 <body>
-    <div class="edugo-app">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">🎓 EduGo</div>
-            <div class="streak">🔥 <span id="streakCount">7</span> day streak</div>
-        </header>
 
-        <!-- Main Timer Section -->
-        <main class="timer-section">
-            <div class="timer-container">
-                <div class="progress-ring" id="progressRing">
-                    <svg width="320" height="320">
-                        <circle class="progress-bg" cx="160" cy="160" r="140"></circle>
-                        <circle class="progress-fill" id="progressFill" cx="160" cy="160" r="140"></circle>
-                    </svg>
-                </div>
-                
-                <div class="timer-display">
-                    <div class="time" id="timerDisplay">25:00</div>
-                    <div class="session-type" id="sessionType">WORK SESSION</div>
-                </div>
+<div class="edugo-app">
 
-                <div class="timer-controls">
-                    <button id="startBtn" class="control-btn start">▶ START</button>
-                    <button id="modeBtn" class="control-btn mode">25/5</button>
-                    <button id="pauseBtn" class="control-btn pause" style="display:none;">⏸ PAUSE</button>
-                    <button id="stopBtn" class="control-btn stop">⏹ STOP</button>
-                </div>
-            </div>
-        </main>
+  <!-- Header -->
+  <header class="edugo-header">
+    <h1>EduGO</h1>
+    <p>Personal Study Dashboard</p>
+  </header>
 
-        <!-- Stats -->
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number" id="todayTime">3h 45m</div>
-                <div class="stat-label">Today</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="goalsDone">8/12</div>
-                <div class="stat-label">Goals</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="focusScore">92%</div>
-                <div class="stat-label">Focus</div>
-            </div>
-        </div>
+  <!-- Navigation -->
+  <nav class="edugo-tabs">
+    <button data-tab="dashboard" class="active">Dashboard</button>
+    <button data-tab="stopwatch">Stopwatch</button>
+    <button data-tab="goals">Daily Goals</button>
+  </nav>
 
-        <!-- Daily Goals -->
-        <section class="goals-section">
-            <h2>Daily Goals</h2>
-            <div class="goals-list" id="goalsList">
-                <!-- Goals loaded by JS -->
-            </div>
-            <button class="add-goal-btn" onclick="showGoalModal()">➕ Add Goal</button>
-        </section>
+  <!-- Dashboard -->
+  <section class="tab dashboard active">
+    <div class="period-switch">
+      <button data-period="daily" class="active">Today</button>
+      <button data-period="weekly">Week</button>
+      <button data-period="monthly">Month</button>
+      <button data-period="overall">Overall</button>
     </div>
 
-    <!-- Goal Modal -->
-    <div class="modal" id="goalModal">
-        <div class="modal-content">
-            <h3>Set Study Goal</h3>
-            <select id="goalSubject">
-                <option value="Math">📐 Math</option>
-                <option value="Physics">⚛️ Physics</option>
-                <option value="Chemistry">🧪 Chemistry</option>
-                <option value="Biology">🧬 Biology</option>
-                <option value="English">📚 English</option>
-            </select>
-            <input type="number" id="goalTime" placeholder="Minutes (60, 90, 120)" min="15" max="360">
-            <div class="modal-actions">
-                <button class="modal-btn secondary" onclick="hideGoalModal()">Cancel</button>
-                <button class="modal-btn primary" onclick="addGoal()">SET GOAL</button>
-            </div>
-        </div>
+    <div class="stat-card">
+      <h3>Study Time</h3>
+      <div class="stat-value" id="studyTime">0 min</div>
+      <small id="periodLabel">Today</small>
     </div>
+  </section>
 
-    <script src="../js/edugo.js"></script>
+  <!-- Stopwatch -->
+  <section class="tab stopwatch">
+    <div class="timer-display" id="timerDisplay">00:00</div>
+    <div class="timer-controls">
+      <button id="startBtn">Start</button>
+      <button id="resetBtn">Reset</button>
+      <button id="fullscreenBtn">Full Screen</button>
+    </div>
+  </section>
+
+  <!-- Goals -->
+  <section class="tab goals">
+    <input id="goalInput" placeholder="Add today's goal…" />
+    <ul id="goalList"></ul>
+  </section>
+
+</div>
+
+<div class="fullscreen-timer hidden" id="fullscreenTimer">
+  <div id="fsTime">00:00</div>
+  <button id="exitFullscreen">Exit</button>
+</div>
+
+<script src="edugo.js"></script>
 </body>
 </html>
